@@ -1,4 +1,4 @@
-package com.jk.db.connection;
+package com.jk.db.datasource;
 
 import java.io.IOException;
 import java.sql.Connection;

@@ -1,6 +1,7 @@
 package com.jk.db;
 
-import com.jk.db.connection.JKDataSource;
+import com.jk.db.datasource.JKDataSource;
+import com.jk.db.datasource.JKSession;
 
 /**
  * 

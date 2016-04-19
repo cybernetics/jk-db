@@ -2,6 +2,9 @@ package com.jk.db.exception;
 
 import java.util.ArrayList;
 
+import com.jk.util.exceptions.JKException;
+
+
 public class JKDaoException extends JKException {
 	ArrayList<JKDaoException> exception = new ArrayList<JKDaoException>();
 

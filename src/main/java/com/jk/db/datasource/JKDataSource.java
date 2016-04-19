@@ -1,4 +1,4 @@
-package com.jk.db.connection;
+package com.jk.db.datasource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
-import com.jk.db.JKSession;
 import com.jk.db.exception.JKDaoException;
 
 public interface JKDataSource {

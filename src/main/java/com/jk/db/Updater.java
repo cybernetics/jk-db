@@ -13,5 +13,5 @@ import com.jk.db.exception.JKDaoException;
 public interface Updater {
 	public String getUpdateSql();
 
-	public void setParamters(PreparedStatement ps) throws SQLException, JKDaoException;
+	public void setParamters(PreparedStatement ps) throws SQLException ;
 }

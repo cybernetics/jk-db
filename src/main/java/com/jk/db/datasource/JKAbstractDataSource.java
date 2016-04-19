@@ -1,4 +1,5 @@
-package com.jk.db.connection;
+package com.jk.db.datasource;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,9 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
-import com.jk.db.JKSession;
 import com.jk.db.exception.JKDaoException;
-import com.jk.db.exception.JKException;
+import com.jk.util.exceptions.JKException;
+
 import static com.jk.db.JKDbConstants.*;
 
 public abstract class JKAbstractDataSource implements JKDataSource {

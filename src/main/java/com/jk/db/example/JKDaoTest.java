@@ -40,7 +40,7 @@ public class JKDaoTest {
 			}
 			
 			@Override
-			public Object populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
+			public String populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
 				return rs.getString(1);
 			}
 			
@@ -61,7 +61,7 @@ public class JKDaoTest {
 		return dao.executeUpdate(new Updater() {
 			
 			@Override
-			public void setParamters(PreparedStatement ps) throws SQLException, JKDaoException {
+			public void setParamters(PreparedStatement ps) throws SQLException {
 				ps.setString(1, "Jalal");
 				ps.setDouble(2, 100);
 			}

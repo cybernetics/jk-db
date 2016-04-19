@@ -16,9 +16,10 @@ import java.util.logging.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 
-import com.jk.db.connection.JKDataSourceFactory;
-import com.jk.db.connection.JKDataSourceUtil;
-import com.jk.db.connection.JKDataSource;
+import com.jk.db.datasource.JKDataSource;
+import com.jk.db.datasource.JKDataSourceFactory;
+import com.jk.db.datasource.JKDataSourceUtil;
+import com.jk.db.datasource.JKSession;
 import com.jk.db.exception.JKDaoException;
 import com.jk.db.exception.JKRecordNotFoundException;
 import com.jk.util.ConversionUtil;
@@ -129,6 +130,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @throws JKRecordNotFoundException
 	 * @throws JKDaoException
 	 */
+	@Override
 	public Object findRecord(Finder finder) {
 		Connection connection = null;
 		PreparedStatement ps = null;
@@ -218,7 +220,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
-	public ArrayList lstRecords(Finder finder) throws JKDaoException {
+	@Override
+	public List lstRecords(Finder finder) throws JKDaoException {
 		// System.out.println("Executing : "+finder.getFinderSql());
 		Connection connection = null;
 		PreparedStatement ps = null;
@@ -269,6 +272,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public int executeUpdate(Updater updater) throws JKDaoException {
 		Connection connection = null;
 		PreparedStatement ps = null;
@@ -374,6 +378,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public Object exeuteSingleOutputQuery(String query) throws JKDaoException {
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -399,6 +404,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public CachedRowSet executeQuery(String query) throws JKDaoException {
 		Statement ps = null;
 		Connection con = null;
@@ -440,6 +446,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public List createRecordsFromSQL(String sql) throws JKDaoException {
 		if (listCache.get(sql) == null) {
 			Connection con = null;
@@ -498,6 +505,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public int executeUpdate(String sql) throws JKDaoException {
 		Connection connection = null;
 		Statement ps = null;
@@ -591,6 +599,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public Object[] exeuteQueryAsArray(String query) throws JKDaoException {
 		try {
 			CachedRowSet rs = executeQuery(query);
@@ -638,6 +647,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public int getNextId(String tableName, String fieldName) throws JKDaoException {
 		Connection connection = getConnection(true);
 		try {
@@ -741,6 +751,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	/**
 	 * 
 	 */
+	@Override
 	public int getRowsCount(String query) throws NumberFormatException, JKDaoException {
 		String sql = "SELECT COUNT(*) FROM (" + query + ") ";
 		// System.out.println(sql);
@@ -771,6 +782,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return
 	 * @throws JKDaoException
 	 */
+	@Override
 	public Object exeuteSingleOutputQuery(String query, Object... params) throws JKDaoException {
 		return exeuteSingleOutputQuery(StringUtil.compile(query, params));
 	}

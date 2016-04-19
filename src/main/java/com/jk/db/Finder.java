@@ -11,7 +11,7 @@ import com.jk.db.exception.JKRecordNotFoundException;
  * 
  * 
  */
-public interface Finder {
+public interface Finder extends JKDBOperation{
 	public String getFinderSql();
 
 	/**
@@ -25,5 +25,5 @@ public interface Finder {
 	 * @throws JKDaoException
 	 * @throws JKRecordNotFoundException
 	 */
-	public Object populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException;
+	public <T> T populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException;
 }

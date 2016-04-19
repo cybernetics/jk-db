@@ -1,9 +1,8 @@
-package com.jk.db;
+package com.jk.db.datasource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.jk.db.connection.JKDataSource;
 import com.jk.db.exception.JKDaoException;
 
 /**
