@@ -85,6 +85,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @throws JKDaoException
 	 */
 	protected Connection getConnection(boolean query) {
+		logger.info("get connection with query flag : " + query);
 		if (session != null && !session.isClosed()) {
 			return session.getConnection();
 		}
@@ -292,7 +293,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		} catch (SQLException e) {
 			throw new JKDaoException(e);
 		} finally {
-			close(ps,connection);
+			close(ps, connection);
 		}
 	}
 
@@ -512,11 +513,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		try {
 			connection = getConnection();
 			ps = createStatement(connection);
-			System.err.println("Executeing : " + sql);
+			logger.info("exceuting sql : ".concat(sql));
 			int count = ps.executeUpdate(sql);
-			System.err.println("Affeted Rows : " + count);
+			logger.info("affected rows : " + count);
 			// no auto increment fields
-			return 0;
+			return count;
 		} catch (SQLException e) {
 			throw new JKDaoException(e);
 		} finally {

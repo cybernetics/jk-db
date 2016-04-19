@@ -25,7 +25,8 @@ public class JKDataSourceFactory {
 			logger.info("trying to load config file");
 			tryLoadConfig();
 			if (defaultResourceManager == null) {
-				throw new JKDaoException("Please set default datasource or provide config file");
+				logger.info("no configuration file is provided , defaults will be used");
+				defaultResourceManager=createInstance(new Properties());
 			}
 		}
 		return defaultResourceManager;
@@ -41,8 +42,14 @@ public class JKDataSourceFactory {
 			logger.info("Loading exists file :".concat(getConfigFileName()));
 			Properties prop = IOUtil.readPropertiesFile(file);
 			logger.info("constructing datasource");
-			defaultResourceManager = new JKPoolingDataSource(prop);
+			defaultResourceManager = createInstance(prop);
+		}else{
+			
 		}
+	}
+
+	protected static JKPoolingDataSource createInstance(Properties prop) {
+		return new JKPoolingDataSource(prop);
 	}
 
 	/**
