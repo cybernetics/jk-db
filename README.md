@@ -141,8 +141,7 @@ for full code of examples , please refer the source code and examples package
 ##Class diagram
 ![alt tag](https://github.com/kiswanij/jk-db/blob/master/design/jk-db-class-diagram-jalal-kiswani.PNG)
 
-Enjoy!
-Jalal
-http://www.jalalkiswani.com
+Enjoy!  
+Jalal ( http://www.jalalkiswani.com )
 
  
