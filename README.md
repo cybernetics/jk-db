@@ -31,7 +31,7 @@ Light JDBC API for simplifying database driven development with Java. It is stra
 	db-user=root
 	db-password=123456
 
-** Note : the above config file is optional and also the above configurations are already the defaults, so no need to set it up :) ** 
+** Note : the above config file is optional and also the above configurations are already the defaults, so no need to set it up. ** 
 Thats it , now you can start us the API , have a look at the example sections for more details on the API 	
 
 ## Examples:
