@@ -2,8 +2,8 @@
 Light JDBC API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
 
 ## Usage : 
-1- Create new maven project
-2- Add JK-DB dependency to your **pom.xml** inside the dependencies sections
+1- Create new maven project 
+2- Add JK-DB dependency to your **pom.xml** inside the dependencies sections 
 		
 	  	<dependency>
 	  		<groupId>com.jalalkiswani</groupId>
@@ -11,7 +11,7 @@ Light JDBC API for simplifying database driven development with Java. It is stra
   			<version>0.0.1</version>
   	    </dependency>
   	    
-3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside build-->plugins section :
+3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside **build-->plugins** section :
 
 	<plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -31,7 +31,7 @@ Light JDBC API for simplifying database driven development with Java. It is stra
 	db-user=root
 	db-password=123456
 
-**Note : the above config file is optional and also the above configurations are already the defaults, so no need to set it up :) **
+** Note : the above config file is optional and also the above configurations are already the defaults, so no need to set it up :) ** 
 Thats it , now you can start us the API , have a look at the example sections for more details on the API 	
 
 ## Examples:
