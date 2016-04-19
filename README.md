@@ -1,5 +1,5 @@
 # JK-DB API
-Light JDBC API for simplifying  database driven development with Java. It is straight forward approach with minimal required configurations and environment prepaption.
+Light JDBC API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
 
 ## Configurations:
 By default , create file named  (jk-db.properties) in the current working directory, with the following contents:
@@ -68,6 +68,31 @@ for full code of examples , please refre the source code and examples package
 			}
 		});
 		return emp;
+	}
+
+## Execute query and load the results into List of objects using Finder
+
+		public List getAllEmployees() {
+		return dao.lstRecords(new Finder() {
+
+			@Override
+			public void setParamters(PreparedStatement ps) throws SQLException {
+			}
+
+			@Override
+			public Employee populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
+				Employee emp = new Employee();
+				emp.setId(rs.getInt("id"));
+				emp.setName(rs.getString("name"));
+				emp.setSalary(rs.getDouble("salary"));
+				return emp;
+			}
+
+			@Override
+			public String getFinderSql() {
+				return "SELECT * FROM employees";
+			}
+		});
 	}
 	
 ### Execute with the protection from sql injection using Updater
