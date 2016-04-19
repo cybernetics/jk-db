@@ -1,23 +1,47 @@
 # JK-DB API
 Light JDBC API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
 
-## Configurations:
-By default , create file named  (jk-db.properties) in the current working directory, with the following contents:
+## Usage : 
+1- Create new maven project
+2- Add JK-DB dependency to your **pom.xml** inside the dependencies sections
+		
+	  	<dependency>
+	  		<groupId>com.jalalkiswani</groupId>
+  			<artifactId>jk-db</artifactId>
+  			<version>0.0.1</version>
+  	    </dependency>
+  	    
+3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside build-->plugins section :
+
+	<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>   	    
+	
+4- Create configurations named  **jk-db.properties** in project working directory, with the following contents:
 	
 	db-driver-name=com.mysql.jdbc.Driver
 	db-url=jdbc:mysql://localhost:3306/app
 	db-user=root
 	db-password=123456
 
-Note : the above file are optional and the above configurations are already the defaults , so no need to set it up :)
+**Note : the above config file is optional and also the above configurations are already the defaults, so no need to set it up :) **
+Thats it , now you can start us the API , have a look at the example sections for more details on the API 	
 
 ## Examples:
-for full code of examples , please refre the source code and examples package
+for full code of examples , please refer the source code and examples package
 ### Dumping table contents as string
 	
 		JKDefaultDao dao=new JKDefaultDao();
 		String rows=dao.executeOutputQuery("SELECT * FROM employees", ",", "\n");
 		System.out.println(rows);
+		
 ### Execute data manipulation statement (insert,update or delete)
 
 		JKDefaultDao dao=new JKDefaultDao();
