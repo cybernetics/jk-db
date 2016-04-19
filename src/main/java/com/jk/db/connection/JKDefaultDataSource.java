@@ -7,6 +7,11 @@ import java.util.Properties;
 
 import com.jk.db.JKDbConstants;
 
+/**
+ * 
+ * @author Jalal
+ *
+ */
 public class JKDefaultDataSource extends JKAbstractDataSource {
 
 	private Properties config;

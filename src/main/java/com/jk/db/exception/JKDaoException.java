@@ -1,6 +1,5 @@
 package com.jk.db.exception;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class JKDaoException extends JKException {

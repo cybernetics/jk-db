@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.jk.db;
 
 import java.sql.PreparedStatement;
@@ -11,7 +8,7 @@ import com.jk.db.exception.JKDaoException;
 import com.jk.db.exception.JKRecordNotFoundException;
 
 /**
- * @author u087
+ * 
  * 
  */
 public interface Finder {

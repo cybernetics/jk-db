@@ -3,6 +3,10 @@ package com.jk.db;
 import java.io.Serializable;
 import java.util.Vector;
 
+/**
+ * @author Jalal
+ *
+ */
 public class JKDbIdValue implements Serializable {
 	Object id;
 

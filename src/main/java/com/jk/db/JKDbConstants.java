@@ -1,5 +1,9 @@
 package com.jk.db;
 
+/**
+ * @author Jalal
+ *
+ */
 public class JKDbConstants {
 
 	public static final String DEFAULT_CONFIG_FILE_NAME = "jk-db.properties";

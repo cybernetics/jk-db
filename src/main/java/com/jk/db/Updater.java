@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.jk.db;
 
 import java.sql.PreparedStatement;
@@ -9,8 +6,9 @@ import java.sql.SQLException;
 import com.jk.db.exception.JKDaoException;
 
 /**
- * @author u087
  * 
+ * @author Jalal
+ *
  */
 public interface Updater {
 	public String getUpdateSql();

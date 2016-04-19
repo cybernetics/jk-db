@@ -13,6 +13,11 @@ import com.jk.db.exception.JKDaoException;
 import com.jk.util.CollectionsUtil;
 import com.jk.util.StringUtil;
 
+/**
+ * 
+ * @author Jalal
+ *
+ */
 public class JKPoolingDataSource extends JKDefaultDataSource {
 
 	private BasicDataSource datasource;
