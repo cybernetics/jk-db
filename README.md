@@ -36,6 +36,16 @@ Thats it , now you can start us the API , have a look at the example sections fo
 
 ## Examples:
 for full code of examples , please refer the source code and examples package
+
+To be able to run the examples , create table in the database with the below structure:
+
+	CREATE TABLE `employees` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `name` varchar(255) DEFAULT NULL,
+	  `salary` double DEFAULT NULL,
+	  PRIMARY KEY (`id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 ### Dumping table contents as string
 	
 		JKDefaultDao dao=new JKDefaultDao();
