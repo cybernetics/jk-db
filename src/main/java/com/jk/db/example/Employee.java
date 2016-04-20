@@ -37,61 +37,79 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.jk.db;
+package com.jk.db.example;
 
 /**
- * The Class JKDbConstants.
+ * The Class Employee.
  *
  * @author Jalal Kiswani
  */
-public class JKDbConstants {
+public class Employee {
+	
+	/** The id. */
+	int id;
+	
+	/** The name. */
+	String name;
+	
+	/** The salary. */
+	double salary;
 
-	/** The Constant DEFAULT_CONFIG_FILE_NAME. */
-	public static final String DEFAULT_CONFIG_FILE_NAME = "jk-db.properties";
+	/**
+	 * Gets the id.
+	 *
+	 * @return the id
+	 */
+	public int getId() {
+		return this.id;
+	}
 
-	/** The Constant DEFAULT_CONFIG_FILE_NAME_KEY. */
-	public static final String DEFAULT_CONFIG_FILE_NAME_KEY = "jk.db.config.file";
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
+	}
 
-	/** The Constant PROPERTY_DRIVER_NAME. */
-	public static final String PROPERTY_DRIVER_NAME = "db-driver-name";
+	/**
+	 * Gets the salary.
+	 *
+	 * @return the salary
+	 */
+	public double getSalary() {
+		return this.salary;
+	}
 
-	/** The Constant PROPERTY_DB_URL. */
-	public static final String PROPERTY_DB_URL = "db-url";
+	/**
+	 * Sets the id.
+	 *
+	 * @param id
+	 *            the new id
+	 */
+	public void setId(final int id) {
+		this.id = id;
+	}
 
-	/** The Constant PROPERTY_DB_USER. */
-	public static final String PROPERTY_DB_USER = "db-user";
+	/**
+	 * Sets the name.
+	 *
+	 * @param name
+	 *            the new name
+	 */
+	public void setName(final String name) {
+		this.name = name;
+	}
 
-	/** The Constant PROPERTY_DB_PASSWORD. */
-	public static final String PROPERTY_DB_PASSWORD = "db-password";
-
-	/** The Constant PROPERTY_QUERY_LIMIT. */
-	public static final String PROPERTY_QUERY_LIMIT = "query-limit";
-
-	/** The Constant PROPERTY_INITIAL_POOL_SIZE_KEY. */
-	public static final String PROPERTY_INITIAL_POOL_SIZE_KEY = "db-initial-size";
-
-	/** The Constant PROPERTY_MAX_POOL_SIZE_KEY. */
-	public static final String PROPERTY_MAX_POOL_SIZE_KEY = "db-max-total";
-
-	/** The Constant DEFAULT_LIMIT. */
-	public static final int DEFAULT_LIMIT = 100;
-
-	/** The Constant DEFAULT_POOL_INITIAL_SIZE. */
-	public static final String DEFAULT_POOL_INITIAL_SIZE = "2";
-
-	/** The Constant DEFAULT_POOL_MAX_SIZE. */
-	public static final String DEFAULT_POOL_MAX_SIZE = "10";
-
-	/** The Constant DEFAULT_DB_DRIVER. */
-	public static final String DEFAULT_DB_DRIVER = "com.mysql.jdbc.Driver";
-
-	/** The Constant DEFAULT_DB_URL. */
-	public static final String DEFAULT_DB_URL = "jdbc:mysql://localhost:3306/app";
-
-	/** The Constant DEFAULT_DB_USER. */
-	public static final String DEFAULT_DB_USER = "root";
-
-	/** The Constant DEFAULT_DB_PASSWORD. */
-	public static final String DEFAULT_DB_PASSWORD = "123456";
+	/**
+	 * Sets the salary.
+	 *
+	 * @param salary
+	 *            the new salary
+	 */
+	public void setSalary(final double salary) {
+		this.salary = salary;
+	}
 
 }

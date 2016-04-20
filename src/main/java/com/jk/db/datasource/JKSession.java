@@ -1,3 +1,42 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [2016] [Jalal Kiswani]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 package com.jk.db.datasource;
 
 import java.sql.Connection;
@@ -6,63 +45,128 @@ import java.sql.SQLException;
 import com.jk.db.exception.JKDaoException;
 
 /**
- * Manage all related trx managed in non-trx container
- * 
- * @author jalal
- * 
+ * Manage all related trx managed in non-trx container.
+ *
+ * @author Jalal Kiswani
  */
 public class JKSession {
+
+	/** The connection. */
 	private Connection connection;
+
+	/** The commit. */
 	private boolean commit;
+
+	/** The roll back only. */
 	private boolean rollBackOnly;
+
+	/** The closed. */
 	boolean closed;
+
+	/** The parent session. */
 	private JKSession parentSession;
+
+	/** The connection manager. */
 	private JKDataSource connectionManager;
 
 	/**
-	 * 
+	 * Instantiates a new JK session.
+	 *
 	 * @param connection
+	 *            the connection
 	 * @throws JKDaoException
+	 *             the JK dao exception
 	 */
-	private JKSession(Connection connection) throws JKDaoException {
+	private JKSession(final Connection connection) throws JKDaoException {
 		this.connection = connection;
 		try {
 			connection.setAutoCommit(false);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new JKDaoException(e);
 		}
 	}
 
 	/**
-	 * 
-	 * @param parentSession
+	 * Instantiates a new JK session.
+	 *
+	 * @param connectionManager
+	 *            the connection manager
+	 * @throws JKDaoException
+	 *             the JK dao exception
 	 */
-	public JKSession(JKSession parentSession) {
-		this.parentSession = parentSession;
-	}
-
-	public JKSession(JKDataSource connectionManager) throws JKDaoException {
+	public JKSession(final JKDataSource connectionManager) throws JKDaoException {
 		this(connectionManager.getConnection());
 		this.connectionManager = connectionManager;
 	}
 
 	/**
-	 * @return the commit
+	 * Instantiates a new JK session.
+	 *
+	 * @param parentSession
+	 *            the parent session
 	 */
-	public boolean isCommit() {
-		return parentSession != null ? parentSession.isCommit() : commit;
+	public JKSession(final JKSession parentSession) {
+		this.parentSession = parentSession;
+	}
+
+	/**
+	 * Close.
+	 *
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
+	public void close() throws JKDaoException {
+		if (this.parentSession != null) {
+			// Just return , because this would be called from method that
+			// doesn't know it has been
+			// called from outer session, so we just wait until the parent
+			// session close it self
+			return;
+		}
+		try {
+			if (this.connection == null || this.connection.isClosed()) {
+				throw new IllegalStateException("Invalid call to Session.close on closed session");
+			}
+			if (isCommit() && !isRollbackOnly()) {
+				this.connection.commit();
+			} else {
+				this.connection.rollback();
+			}
+		} catch (final SQLException e) {
+			throw new JKDaoException(e);
+		} finally {
+			// the abstract resource manage will check internally on the
+			// nullable and isClosed properties for the connection
+			// GeneralUtility.printStackTrace();
+			// System.err.println("Closing connection from session");
+			this.connectionManager.close(this.connection);
+			setClosed(true);
+		}
+	}
+
+	/**
+	 * Close.
+	 *
+	 * @param commit
+	 *            the commit
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
+	public void close(final boolean commit) throws JKDaoException {
+		commit(commit);
+		close();
 	}
 
 	/**
 	 * The commit value could be overriden , but the rollbackOnly , if set to
-	 * true ,it cannot be changed
-	 * 
+	 * true ,it cannot be changed.
+	 *
 	 * @param commit
 	 *            the commit to set
 	 */
-	protected void commit(boolean commit) {
-		if (parentSession != null) {
-			parentSession.commit(commit);
+	protected void commit(final boolean commit) {
+		if (this.parentSession != null) {
+			this.parentSession.commit(commit);
 		} else {
 			if (!commit) {
 				this.rollBackOnly = true;
@@ -73,88 +177,71 @@ public class JKSession {
 	}
 
 	/**
-	 * 
-	 * @param commit
-	 * @throws JKDaoException
+	 * Gets the connection.
+	 *
+	 * @return the connection
 	 */
-	public void close(boolean commit) throws JKDaoException {
-		commit(commit);
-		close();
+	public Connection getConnection() {
+		return this.parentSession != null ? this.parentSession.getConnection() : this.connection;
 	}
 
 	/**
-	 * 
-	 * @throws JKDaoException
+	 * Gets the connection manager.
+	 *
+	 * @return the connection manager
 	 */
-	public void close() throws JKDaoException {
-		if (parentSession != null) {
-			// Just return , because this would be called from method that
-			// doesn't know it has been
-			// called from outer session, so we just wait until the parent
-			// session close it self
-			return;
-		}
-		try {
-			if (connection == null || connection.isClosed()) {
-				throw new IllegalStateException("Invalid call to Session.close on closed session");
-			}
-			if (isCommit() && !isRollbackOnly()) {
-				connection.commit();
-			} else {
-				connection.rollback();
-			}
-		} catch (SQLException e) {
-			throw new JKDaoException(e);
-		} finally {
-			// the abstract resource manage will check internally on the
-			// nullable and isClosed properties for the connection
-			//GeneralUtility.printStackTrace();
-			//System.err.println("Closing connection from session");
-			connectionManager.close(connection);
-			setClosed(true);
-		}
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	private boolean isRollbackOnly() {
-		return rollBackOnly;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isClosed() {
-		return parentSession != null ? parentSession.isClosed() : closed;
-	}
-
-	/**
-	 * @param closed
-	 *            the closed to set
-	 */
-	private void setClosed(boolean closed) {
-		this.closed = closed;
-	}
-
-	public JKSession getParentSession() {
-		return parentSession;
-	}
-
 	public JKDataSource getConnectionManager() {
-		JKDataSource manager= parentSession != null ? parentSession.getConnectionManager() : connectionManager;
-		if(manager==null){
+		final JKDataSource manager = this.parentSession != null ? this.parentSession.getConnectionManager()
+				: this.connectionManager;
+		if (manager == null) {
 			throw new IllegalStateException("Connectino manager connot be null");
 		}
 		return manager;
 	}
 
 	/**
-	 * @return the connection
+	 * Gets the parent session.
+	 *
+	 * @return the parent session
 	 */
-	public Connection getConnection() {
-		return parentSession != null ? parentSession.getConnection() : connection;
+	public JKSession getParentSession() {
+		return this.parentSession;
+	}
+
+	/**
+	 * Checks if is closed.
+	 *
+	 * @return true, if is closed
+	 */
+	public boolean isClosed() {
+		return this.parentSession != null ? this.parentSession.isClosed() : this.closed;
+	}
+
+	/**
+	 * Checks if is commit.
+	 *
+	 * @return the commit
+	 */
+	public boolean isCommit() {
+		return this.parentSession != null ? this.parentSession.isCommit() : this.commit;
+	}
+
+	/**
+	 * Checks if is rollback only.
+	 *
+	 * @return true, if is rollback only
+	 */
+	private boolean isRollbackOnly() {
+		return this.rollBackOnly;
+	}
+
+	/**
+	 * Sets the closed.
+	 *
+	 * @param closed
+	 *            the closed to set
+	 */
+	private void setClosed(final boolean closed) {
+		this.closed = closed;
 	}
 }
