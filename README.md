@@ -8,7 +8,7 @@ Light JDBC API for simplifying database driven development with Java. It is stra
 		<dependency>
 			<groupId>com.jalalkiswani</groupId>
 			<artifactId>jk-db</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.3</version>
 		</dependency>
     
 3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside `build-->plugins` section :
@@ -34,6 +34,9 @@ Light JDBC API for simplifying database driven development with Java. It is stra
 __Note:  the above config file is optional and also the above configurations are already the defaults, so no need to set it up. :)__ 
 Thats it , now you can start us the API , have a look at the example sections for more details on the API 	
 
+## JK-DB in web-applications
+ You can use JK-DB in web-applications as well , just place the `jk-db.properties` file inside `/src/main/webapp/WEB-INF/` folder.
+  
 ## Examples:
 for full code of examples , please refer the source code and examples package
 
@@ -55,7 +58,7 @@ To be able to run the examples , create table in the database with the below str
 ### Execute data manipulation statement (insert,update or delete)
 
 		JKDefaultDao dao=new JKDefaultDao();
-		dao.executeUpdate("UPDATE employees SET salary=salary+5");
+		dao.executeUpdate("UPDATE employees SET salary=?",1000);
 		
 ### Execute single output query
 	
@@ -129,7 +132,7 @@ To be able to run the examples , create table in the database with the below str
 		});
 	}
 	
-### Execute with the protection from sql injection using Updater
+### Execute data-manipulation using using Updater
 
 		public  int insert(final Employee emp) {
 		return dao.executeUpdate(new Updater() {

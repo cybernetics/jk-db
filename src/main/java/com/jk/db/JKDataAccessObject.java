@@ -48,7 +48,7 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	CachedRowSet executeQuery(String query) throws JKDaoException;
+	CachedRowSet executeQuery(String query,Object... params) throws JKDaoException;
 
 	/**
 	 * Execute update.
@@ -59,7 +59,7 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	int executeUpdate(String sql) throws JKDaoException;
+	int executeUpdate(String sql, Object... params) throws JKDaoException;
 
 	/**
 	 * Execute update.

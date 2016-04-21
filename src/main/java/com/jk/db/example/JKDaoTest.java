@@ -25,6 +25,7 @@ import com.jk.db.JKDefaultDao;
 import com.jk.db.Updater;
 import com.jk.db.exception.JKDaoException;
 import com.jk.db.exception.JKRecordNotFoundException;
+import com.jk.util.CollectionsUtil;
 import com.jk.util.StringUtil;
 
 /**
@@ -73,7 +74,7 @@ public class JKDaoTest {
 	 *            the arguments
 	 */
 	public static void main(final String[] args) {
-
+		printTableRows();
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class JKDaoTest {
 	 */
 	private static void tesLst() {
 		final List list = JKDaoTest.testGetAll();
-		System.out.println(StringUtil.toString(list));
+		System.out.println(CollectionsUtil.toString(list));
 	}
 
 	/**

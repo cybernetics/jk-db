@@ -256,23 +256,24 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		return JKAbstractDao.listCache.get(sql);
 	}
 
-	/**
-	 * Creates the statement.
-	 *
-	 * @param con
-	 *            the con
-	 * @return the statement
-	 * @throws SQLException
-	 *             the SQL exception
-	 */
-	protected Statement createStatement(final Connection con) throws SQLException {
-		final Statement createStatement = con.createStatement();
-		// if (getDataSource().getDriverName().toLowerCase().contains("mysql"))
-		// {
-		// createStatement.setFetchSize(Integer.MIN_VALUE);
-		// }
-		return createStatement;
-	}
+	// /**
+	// * Creates the statement.
+	// *
+	// * @param con
+	// * the con
+	// * @return the statement
+	// * @throws SQLException
+	// * the SQL exception
+	// */
+	// protected PreparedStatement createStatement(final Connection con) throws
+	// SQLException {
+	// final Statement createStatement = con.createStatement();
+	// // if (getDataSource().getDriverName().toLowerCase().contains("mysql"))
+	// // {
+	// // createStatement.setFetchSize(Integer.MIN_VALUE);
+	// // }
+	// return createStatement;
+	// }
 
 	/**
 	 * Creates the statement.
@@ -345,14 +346,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	@Override
-	public CachedRowSet executeQuery(final String query) throws JKDaoException {
+	public CachedRowSet executeQuery(final String query, Object... params) throws JKDaoException {
 		Statement ps = null;
 		Connection con = null;
 		ResultSet rs = null;
 		// System.out.println(query);
 		try {
 			con = getConnection();
-			ps = createStatement(con);
+			ps = prepareStatement(con, query,params);
 			rs = ps.executeQuery(query);
 			final CachedRowSet impl = new CachedRowSetImpl();
 			impl.populate(rs);
@@ -398,14 +399,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	@Override
-	public int executeUpdate(final String sql) throws JKDaoException {
+	public int executeUpdate(final String sql, Object... params) throws JKDaoException {
 		Connection connection = null;
-		Statement ps = null;
+		PreparedStatement ps = null;
 		try {
 			connection = getConnection();
-			ps = createStatement(connection);
+			ps = prepareStatement(connection, sql, params);
 			this.logger.info("exceuting sql : ".concat(sql));
-			final int count = ps.executeUpdate(sql);
+			final int count = ps.executeUpdate();
 			this.logger.info("affected rows : " + count);
 			// no auto increment fields
 			return count;
@@ -892,12 +893,17 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *            the connection
 	 * @param sql
 	 *            the sql
+	 * @param params
 	 * @return the prepared statement
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
-	protected PreparedStatement prepareStatement(final Connection connection, final String sql) throws SQLException {
+	protected PreparedStatement prepareStatement(final Connection connection, final String sql, Object... params)
+			throws SQLException {
 		final PreparedStatement prepareStatement = connection.prepareStatement(sql);
+		for (int i = 0; i < params.length; i++) {
+			prepareStatement.setObject(i + 1, params[i]);
+		}
 		return prepareStatement;
 	}
 

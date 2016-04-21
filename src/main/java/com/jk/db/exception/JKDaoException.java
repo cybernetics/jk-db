@@ -17,7 +17,7 @@ package com.jk.db.exception;
 
 import java.util.ArrayList;
 
-import com.jk.util.exceptions.JKException;
+import com.jk.exceptions.JKException;
 
 /**
  * The Class JKDaoException.

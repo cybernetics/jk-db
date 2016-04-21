@@ -47,7 +47,7 @@ public interface JKDataSource {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	public void close(Connection connection, boolean commit) throws JKDaoException;
+	public void close(Connection connection, boolean commit) ;
 
 	/**
 	 * Close.

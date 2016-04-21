@@ -23,7 +23,7 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 import com.jk.db.exception.JKDaoException;
-import com.jk.util.exceptions.JKException;
+import com.jk.exceptions.JKException;
 
 /**
  * The Class JKAbstractDataSource.
@@ -82,7 +82,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 	 * boolean)
 	 */
 	@Override
-	public void close(final Connection connection, final boolean commit) throws JKDaoException {
+	public void close(final Connection connection, final boolean commit)  {
 		try {
 			if (commit) {
 				this.logger.info("commit transaction");

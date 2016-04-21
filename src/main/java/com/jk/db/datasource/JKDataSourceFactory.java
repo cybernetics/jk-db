@@ -16,11 +16,18 @@
 package com.jk.db.datasource;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import com.jk.context.JKContext;
+import com.jk.context.JKContextFactory;
 import com.jk.db.JKDbConstants;
 import com.jk.db.exception.JKDaoException;
+import com.jk.exceptions.JKException;
+import com.jk.resources.JKResourceLoader;
+import com.jk.resources.JKResourceLoaderFactory;
 import com.jk.util.IOUtil;
 
 /**
@@ -62,16 +69,20 @@ public class JKDataSourceFactory {
 	 * @return the default data source
 	 */
 	public static JKDataSource getDefaultDataSource() {
-		JKDataSourceFactory.logger.info("get default datasource");
-		if (JKDataSourceFactory.defaultResourceManager == null) {
-			JKDataSourceFactory.logger.info("trying to load config file");
-			JKDataSourceFactory.tryLoadConfig();
+		try {
+			JKDataSourceFactory.logger.info("get default datasource");
 			if (JKDataSourceFactory.defaultResourceManager == null) {
-				JKDataSourceFactory.logger.info("no configuration file is provided , defaults will be used");
-				JKDataSourceFactory.defaultResourceManager = JKDataSourceFactory.createInstance(new Properties());
+				JKDataSourceFactory.logger.info("trying to load config file");
+				JKDataSourceFactory.tryLoadConfig();
+				if (JKDataSourceFactory.defaultResourceManager == null) {
+					JKDataSourceFactory.logger.info("no configuration file is provided , defaults will be used");
+					JKDataSourceFactory.defaultResourceManager = JKDataSourceFactory.createInstance(new Properties());
+				}
 			}
+			return JKDataSourceFactory.defaultResourceManager;
+		} catch (IOException e) {
+			throw new JKException(e);
 		}
-		return JKDataSourceFactory.defaultResourceManager;
 	}
 
 	/**
@@ -88,17 +99,22 @@ public class JKDataSourceFactory {
 
 	/**
 	 * Try load config.
+	 * 
+	 * @throws IOException
 	 */
-	protected static void tryLoadConfig() {
-		final String configFileName = JKDataSourceFactory.getConfigFileName();
-		final File file = new File(configFileName);
-		if (file.exists()) {
-			JKDataSourceFactory.logger.info("Loading exists file :".concat(JKDataSourceFactory.getConfigFileName()));
-			final Properties prop = IOUtil.readPropertiesFile(file);
+	protected static void tryLoadConfig() throws IOException {
+		String configFileName = JKDataSourceFactory.getConfigFileName();
+		String configPath = JKContextFactory.getCurrentContext().getConfigPath();
+
+		JKResourceLoader resourceLoader = JKResourceLoaderFactory.getResourceLoader();
+		configFileName = configPath.concat(configFileName);
+		InputStream in = resourceLoader.getResourceAsStream(configFileName);
+		if (in != null) {
+			JKDataSourceFactory.logger.info("Loading exists file :".concat(configFileName));
+			final Properties prop = new Properties();
+			prop.load(in);
 			JKDataSourceFactory.logger.info("constructing datasource");
 			JKDataSourceFactory.defaultResourceManager = JKDataSourceFactory.createInstance(prop);
-		} else {
-
 		}
 	}
 }
