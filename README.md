@@ -1,5 +1,12 @@
 # JK-DB API
-Light JDBC API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
+Light Java database API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
+
+## Features:
+1. Plain JDBC support
+2. ORM support based on JPA standards with hibernate as implementation.
+3. Support for web and desktop 
+4. Unified configurations for JDBC and ORM through unified simple config file
+5. straight forward API
 
 ## Usage : 
 1- Create new maven project.  
@@ -37,8 +44,8 @@ Thats it , now you can start us the API , have a look at the example sections fo
 
 ## JK-DB in web-applications
  You can use JK-DB in web-applications as well , just place the `jk-db.properties` file inside `/src/main/webapp/WEB-INF/` folder.
-  
-## Examples:
+#Examples  
+## Plain JDBC Examples:
 for full code of examples , please refer the source code and examples package
 
 To be able to run the examples , create table in the database with the below structure:
@@ -96,7 +103,7 @@ To be able to run the examples , create table in the database with the below str
 		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
 		System.out.println(dao.getSystemDate());
 
-## Advanced 
+### Advanced 
 ### Execute query and load object using JKFinder
 
 		public Employee findEmployee(final int id) {
@@ -123,7 +130,7 @@ To be able to run the examples , create table in the database with the below str
 		});
 	}
 
-## Execute query and load the results into List of objects using JKFinder
+### Execute query and load the results into List of objects using JKFinder
 
 		public List getAllEmployees() {
 		return dataAccess.getList(new JKFinder() {
@@ -167,6 +174,7 @@ To be able to run the examples , create table in the database with the below str
 		});
 	}
 	
+## ORM Examples:
 ##Class diagram
 ![alt tag](https://github.com/kiswanij/jk-db/blob/master/design/jk-db-class-diagram-jalal-kiswani.PNG)
 
