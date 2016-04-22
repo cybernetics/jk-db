@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db;
+package com.jk.db.dataaccess;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,12 +31,12 @@ import java.util.logging.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 
+import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 import com.jk.db.datasource.JKDataSource;
 import com.jk.db.datasource.JKDataSourceFactory;
 import com.jk.db.datasource.JKDataSourceUtil;
 import com.jk.db.datasource.JKSession;
-import com.jk.db.exception.JKDaoException;
-import com.jk.db.exception.JKRecordNotFoundException;
 import com.jk.util.ConversionUtil;
 import com.jk.util.DebugUtil;
 import com.jk.util.StringUtil;
@@ -48,37 +48,17 @@ import com.sun.rowset.CachedRowSetImpl;
  * @author Jalal Kiswani
  */
 public abstract class JKAbstractDao implements JKDataAccessObject {
-
-	/** The cache. */
 	// TODO : add support for max cache size
 	private static Map<String, Hashtable<Object, Object>> cache = new Hashtable<String, Hashtable<Object, Object>>();
 
 	/** The list cache. */
 	private static Map<String, List<? extends Object>> listCache = new Hashtable<>();
 
-	/**
-	 * Removes the list cache.
-	 *
-	 * @param query
-	 *            the query
-	 */
-	public static void removeListCache(final String query) {
-		JKAbstractDao.listCache.remove(query);
-	}
-
-	/**
-	 * Reset cache.
-	 */
-	public synchronized static void resetCache() {
-		JKAbstractDao.cache.clear();
-		JKAbstractDao.listCache.clear();
-	}
-
 	/** The logger. */
 	Logger logger = Logger.getLogger(getClass().getName());
 
 	/** The connection manager. */
-	private JKDataSource connectionManager;
+	private JKDataSource dataSource;
 
 	/** The session. */
 	private JKSession session;
@@ -92,11 +72,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	/**
 	 * Instantiates a new JK abstract dao.
 	 *
-	 * @param connectionManager
+	 * @param dataSource
 	 *            the connection manager
 	 */
-	public JKAbstractDao(final JKDataSource connectionManager) {
-		this.connectionManager = connectionManager;
+	public JKAbstractDao(final JKDataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -215,17 +195,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	@Override
-	public List createRecordsFromSQL(String sql) throws JKDaoException {
+	public List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params) {
 		if (JKAbstractDao.listCache.get(sql) == null) {
 			Connection con = null;
 			ResultSet rs = null;
 			PreparedStatement ps = null;
-			sql = sql.trim();
-			// System.out.println("\n\n\n\nLoading list: " + sql);
-			// GeneralUtility.printStackTrace();
 			try {
 				con = getConnection(true);
-				ps = createStatement(sql, con);
+				ps = prepareStatement(con, sql, params);
 				rs = ps.executeQuery();
 				final Vector<JKDbIdValue> results = new Vector<JKDbIdValue>();
 				final ResultSetMetaData metaData = rs.getMetaData();
@@ -235,12 +212,12 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 
 					if (metaData.getColumnCount() >= 2) {
 						if (rs.getString(2) == null) {
-							debug(sql + "\n generating null values");
+							logger.fine(sql.concat(" generating null values"));
 						} else {
 							combo.setValue(rs.getString(2));
 						}
 					} else {
-						debug(sql + "\n generating single column only");
+						logger.fine((sql.concat(" generating single column only")));
 					}
 					results.add(combo);
 				}
@@ -253,7 +230,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 				close(rs, ps, con);
 			}
 		}
-		return JKAbstractDao.listCache.get(sql);
+		return (List<JKDbIdValue>) JKAbstractDao.listCache.get(sql);
 	}
 
 	// /**
@@ -276,49 +253,24 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	// }
 
 	/**
-	 * Creates the statement.
-	 *
-	 * @param sql
-	 *            the sql
-	 * @param con
-	 *            the con
-	 * @return the prepared statement
-	 * @throws SQLException
-	 *             the SQL exception
-	 */
-	protected PreparedStatement createStatement(final String sql, final Connection con) throws SQLException {
-		return con.prepareStatement(sql);
-	}
-
-	/**
-	 * Debug.
-	 *
-	 * @param string
-	 *            the string
-	 */
-	private void debug(final String string) {
-		if (System.getProperty("jk.sql.debug", "false").equals("true")) {
-			DebugUtil.printCurrentTime(string);
-		}
-	}
-
-	/**
-	 * Execute output query.
-	 *
+	 * 
 	 * @param query
-	 *            the query
-	 * @param fieldSeparator
-	 *            the field separator
-	 * @param recordsSepartor
-	 *            the records separtor
-	 * @return the string
-	 * @throws JKDaoException
-	 *             the JK dao exception
+	 * @return
 	 */
-	public String executeOutputQuery(final String query, final String fieldSeparator, final String recordsSepartor)
-			throws JKDaoException {
+	public String executeQueryAsString(final String query) {
+		return executeQueryAsString(query, ",", System.getProperty("line.separator"));
+	}
+
+	/**
+	 * 
+	 * @param query
+	 * @param fieldSeparator
+	 * @param recordsSepartor
+	 * @return
+	 */
+	public String executeQueryAsString(final String query, final String fieldSeparator, final String recordsSepartor) {
 		try {
-			final CachedRowSet rs = executeQuery(query);
+			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
 			final ResultSetMetaData meta = rs.getMetaData();
 			final StringBuffer buf = new StringBuffer();
 			while (rs.next()) {
@@ -346,14 +298,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	@Override
-	public CachedRowSet executeQuery(final String query, Object... params) throws JKDaoException {
+	public CachedRowSet executeQueryAsCachedRowSet(final String query, Object... params) {
 		Statement ps = null;
 		Connection con = null;
 		ResultSet rs = null;
 		// System.out.println(query);
 		try {
 			con = getConnection();
-			ps = prepareStatement(con, query,params);
+			ps = prepareStatement(con, query, params);
 			rs = ps.executeQuery(query);
 			final CachedRowSet impl = new CachedRowSetImpl();
 			impl.populate(rs);
@@ -379,14 +331,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	public CachedRowSet executeQuery(final String query, final int fromRowIndex, final int toRowIndex)
-			throws JKDaoException {
+	public CachedRowSet executeQueryAsCachedRowSet(final String query, final int fromRowIndex, final int toRowIndex) {
 		throw new IllegalStateException("this method should be abstract to support other DBMS other than Oracle");
-		// String sql =
-		// "select * from ( select a.*, rownum r from ( "+query+") a where
-		// rownum <= "
-		// + (toRowIndex) + " ) where r > " + fromRowIndex;
-		// return executeQuery(sql);
 	}
 
 	/**
@@ -485,7 +431,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	@Override
 	public Object[] exeuteQueryAsArray(final String query) throws JKDaoException {
 		try {
-			final CachedRowSet rs = executeQuery(query);
+			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
 			final ResultSetMetaData meta = rs.getMetaData();
 			final ArrayList<Object[]> rows = new ArrayList<Object[]>();
 			while (rs.next()) {
@@ -500,50 +446,44 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			throw new JKDaoException(e);
 		}
 	}
-
-	/**
-	 * Exeute single output query.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the object
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
+	
 	@Override
-	public Object exeuteSingleOutputQuery(final String query) throws JKDaoException {
+	public List exeuteQueryAsList(final String query,Object... params) throws JKDaoException {
+		try {
+			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
+			final ResultSetMetaData meta = rs.getMetaData();
+			final List<List<Object>> rows = new Vector<>();
+			while (rs.next()) {
+				final List<Object> row = new Vector<>();
+				for (int i = 0; i < meta.getColumnCount(); i++) {
+					row.add(rs.getObject(i + 1));
+				}
+				rows.add(row);
+			}
+			return rows;
+		} catch (final SQLException e) {
+			throw new JKDaoException(e);
+		}
+	}
+
+	@Override
+	public Object exeuteSingleOutputQuery(final String query, Object... params) throws JKDaoException {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			con = getConnection(true);
-			ps = createStatement(query, con);
+			ps = prepareStatement(con, query, params);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getObject(1);
 			}
-			throw new JKRecordNotFoundException("No value available for query :" + query);
+			throw new JKRecordNotFoundException("No value available for query :".concat(query));
 		} catch (final SQLException ex) {
-			throw new JKDaoException(ex.getMessage() + "\n" + query, ex);
+			throw new JKDaoException(ex.getMessage().concat(",".concat(query)), ex);
 		} finally {
 			close(rs, ps, con);
 		}
-	}
-
-	/**
-	 * Exeute single output query.
-	 *
-	 * @param query
-	 *            the query
-	 * @param params
-	 *            the params
-	 * @return the object
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
-	@Override
-	public Object exeuteSingleOutputQuery(final String query, final Object... params) throws JKDaoException {
-		return exeuteSingleOutputQuery(StringUtil.compile(query, params));
 	}
 
 	/**
@@ -659,8 +599,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return the data source
 	 */
 	protected JKDataSource getDataSource() {
-		if (this.connectionManager != null) {
-			return this.connectionManager;
+		if (this.dataSource != null) {
+			return this.dataSource;
 		}
 		return JKDataSourceFactory.getDefaultDataSource();
 	}
@@ -719,16 +659,15 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	public int getNextId(final Connection con, final String tableName, final String fieldName, final String condition)
-			throws JKDaoException {
+	public int getNextId(final Connection con, final String tableName, final String fieldName, final String condition) {
 		PreparedStatement ps = null;
 		int ser;
 		try {
-			String sql = "SELECT MAX(" + fieldName + ")+1 FROM " + tableName;
+			String sql = "SELECT MAX(".concat(fieldName.concat(")+1 FROM ".concat(tableName)));
 			if (condition != null && !condition.trim().equals("")) {
 				sql += " WHERE " + condition;
 			}
-			ps = createStatement(sql, con);
+			ps = prepareStatement(con, sql);
 
 			final ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -812,22 +751,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	public Date getSystemDate() throws JKRecordNotFoundException, JKDaoException {
-		final Finder finder = new Finder() {
-			@Override
-			public String getFinderSql() {
-				return "SELECT SYSDATE()";
-			}
-
-			@Override
-			public Date populate(final ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
-				return rs.getTimestamp(1);
-			}
-
-			@Override
-			public void setParamters(final PreparedStatement ps) {
-			}
-		};
-		return (Date) findRecord(finder);
+		return (Date) exeuteSingleOutputQuery("SELECT SYSDATE()");
 	}
 
 	/**
@@ -850,21 +774,19 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			ps = prepareStatement(connection, finder.getFinderSql());
 			finder.setParamters(ps);
 			rs = ps.executeQuery();
-			debug(ps.toString().substring(ps.toString().toUpperCase().indexOf("SELECT")));
-			final ArrayList list = new ArrayList();
+			logger.fine(ps.toString().substring(ps.toString().toUpperCase().indexOf("SELECT")));
+			final List list = new ArrayList();
 			while (rs.next()) {
 				list.add(finder.populate(rs));
 			}
 			return list;
 		} catch (final SQLException e) {
 			if (ps != null) {
-				debug(ps.toString());
+				logger.severe(ps.toString());
 			}
 			throw new JKDaoException(e);
 		} finally {
-			close(rs);
-			close(ps);
-			close(connection);
+			close(rs,ps,connection);
 		}
 	}
 
@@ -916,7 +838,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	/*
 	 *
 	 */
-	public void printRecordResultSet(final ResultSet rs) {
+	protected void printRecordResultSet(final ResultSet rs) {
 		printRecordResultSet(rs, true);
 	}
 
@@ -928,7 +850,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param all
 	 *            the all
 	 */
-	public void printRecordResultSet(final ResultSet rs, final boolean all) {
+	protected void printRecordResultSet(final ResultSet rs, final boolean all) {
 		try {
 			final java.sql.ResultSetMetaData meta = rs.getMetaData();
 			System.out.println("At print result set");
@@ -959,4 +881,21 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		this.session = session;
 	}
 
+	/**
+	 * Removes the list cache.
+	 *
+	 * @param query
+	 *            the query
+	 */
+	public static void removeListCache(final String query) {
+		JKAbstractDao.listCache.remove(query);
+	}
+
+	/**
+	 * Reset cache.
+	 */
+	public synchronized static void resetCache() {
+		JKAbstractDao.cache.clear();
+		JKAbstractDao.listCache.clear();
+	}
 }

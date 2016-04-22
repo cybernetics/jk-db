@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db;
+package com.jk.db.dataaccess;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.jk.db.exception.JKDaoException;
-import com.jk.db.exception.JKRecordNotFoundException;
+import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 
 /**
  * The Interface Finder.

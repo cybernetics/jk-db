@@ -13,43 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db;
+package com.jk.db.dataaccess;
 
-import com.jk.db.datasource.JKDataSource;
-import com.jk.db.datasource.JKSession;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
- * The Class JKDefaultDao.
+ * The Interface Updater.
  *
  * @author Jalal Kiswani
  */
-public class JKDefaultDao extends JKAbstractDao {
+public interface Updater {
 
 	/**
-	 * Instantiates a new JK default dao.
-	 */
-	public JKDefaultDao() {
-		super();
-	}
-
-	/**
-	 * Instantiates a new JK default dao.
+	 * Gets the update sql.
 	 *
-	 * @param dataSource
-	 *            the data source
+	 * @return the update sql
 	 */
-	public JKDefaultDao(final JKDataSource dataSource) {
-		super(dataSource);
-	}
+	public String getUpdateSql();
 
 	/**
-	 * Instantiates a new JK default dao.
+	 * Sets the paramters.
 	 *
-	 * @param session
-	 *            the session
+	 * @param ps
+	 *            the new paramters
+	 * @throws SQLException
+	 *             the SQL exception
 	 */
-	public JKDefaultDao(final JKSession session) {
-		super(session);
-	}
-
+	public void setParamters(PreparedStatement ps) throws SQLException;
 }

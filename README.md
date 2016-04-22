@@ -52,7 +52,7 @@ To be able to run the examples , create table in the database with the below str
 ### Dumping table contents as string
 	
 		JKDefaultDao dao=new JKDefaultDao();
-		String rows=dao.executeOutputQuery("SELECT * FROM employees", ",", "\n");
+		String rows=dao.executeQueryAsString("SELECT * FROM employees", ",", "\n");
 		System.out.println(rows);
 		
 ### Execute data manipulation statement (insert,update or delete)
@@ -83,7 +83,7 @@ To be able to run the examples , create table in the database with the below str
 ### Execute query and load object using Finder
 
 		public Employee findEmployee(final int id) {
-		return dao.findRecord(new Finder() {
+		return (Employee)dao.findRecord(new Finder() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
@@ -104,7 +104,6 @@ To be able to run the examples , create table in the database with the below str
 				return "SELECT * FROM employees WHERE id=?";
 			}
 		});
-		return emp;
 	}
 
 ## Execute query and load the results into List of objects using Finder

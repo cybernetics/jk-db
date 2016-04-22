@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 
 import com.jk.context.JKContext;
 import com.jk.context.JKContextFactory;
-import com.jk.db.JKDbConstants;
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.JKDbConstants;
+import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.exceptions.JKException;
 import com.jk.resources.JKResourceLoader;
 import com.jk.resources.JKResourceLoaderFactory;

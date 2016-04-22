@@ -13,55 +13,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.exception;
+package com.jk.db.dataaccess.exception;
+
+import java.util.ArrayList;
+
+import com.jk.exceptions.JKException;
 
 /**
- * The Class JKDaoValidationException.
+ * The Class JKDaoException.
  *
  * @author Jalal Kiswani
  */
-public class JKDaoValidationException extends JKDaoException {
+public class JKDaoException extends JKException {
 
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -2450150009026093119L;
+	private static final long serialVersionUID = 1L;
+
+	/** The exception. */
+	ArrayList<JKDaoException> exception = new ArrayList<JKDaoException>();
 
 	/**
-	 * Instantiates a new JK dao validation exception.
+	 * Instantiates a new JK dao exception.
 	 */
-	public JKDaoValidationException() {
+	public JKDaoException() {
 		super();
 	}
 
 	/**
-	 * Instantiates a new JK dao validation exception.
+	 * Method 'DaoException'.
 	 *
 	 * @param message
-	 *            the message
+	 *            String
 	 */
-	public JKDaoValidationException(final String message) {
+	public JKDaoException(final String message) {
 		super(message);
 	}
 
 	/**
-	 * Instantiates a new JK dao validation exception.
+	 * Method 'DaoException'.
 	 *
 	 * @param message
-	 *            the message
+	 *            String
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoValidationException(final String message, final Throwable cause) {
+	public JKDaoException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
 	/**
-	 * Instantiates a new JK dao validation exception.
+	 * Instantiates a new JK dao exception.
 	 *
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoValidationException(final Throwable cause) {
+	public JKDaoException(final Throwable cause) {
 		super(cause);
+	}
+
+	/**
+	 * Adds the.
+	 *
+	 * @param e
+	 *            the e
+	 */
+	public void add(final JKDaoException e) {
+		this.exception.add(e);
 	}
 
 }

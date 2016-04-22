@@ -20,7 +20,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDaoException;
 
 /**
  * The Interface JKDataSource.

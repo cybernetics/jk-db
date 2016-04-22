@@ -18,7 +18,7 @@ package com.jk.db.datasource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDaoException;
 
 /**
  * Manage all related trx managed in non-trx container.

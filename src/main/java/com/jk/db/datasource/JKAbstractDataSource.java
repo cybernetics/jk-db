@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.exceptions.JKException;
 
 /**

@@ -20,11 +20,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.jk.db.Finder;
-import com.jk.db.JKDefaultDao;
-import com.jk.db.Updater;
-import com.jk.db.exception.JKDaoException;
-import com.jk.db.exception.JKRecordNotFoundException;
+import com.jk.db.dataaccess.Finder;
+import com.jk.db.dataaccess.JKDefaultDao;
+import com.jk.db.dataaccess.Updater;
+import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 import com.jk.util.CollectionsUtil;
 import com.jk.util.StringUtil;
 
@@ -82,7 +82,7 @@ public class JKDaoTest {
 	 */
 	private static void printTableRows() {
 		final JKDefaultDao dao = new JKDefaultDao();
-		final String rows = dao.executeOutputQuery("SELECT * FROM employees", ",", "\n");
+		final String rows = dao.executeQueryAsString("SELECT * FROM employees");
 		System.out.println(rows);
 	}
 

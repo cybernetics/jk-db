@@ -22,8 +22,8 @@ import java.util.Properties;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import com.jk.db.JKDbConstants;
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.JKDbConstants;
+import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.util.CollectionsUtil;
 import com.jk.util.StringUtil;
 

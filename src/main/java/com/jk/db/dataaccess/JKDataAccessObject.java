@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db;
+package com.jk.db.dataaccess;
 
 import java.util.List;
 
 import javax.sql.rowset.CachedRowSet;
 
-import com.jk.db.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDaoException;
 
 /**
  * The Interface JKDataAccessObject.
@@ -37,7 +37,7 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	List createRecordsFromSQL(String sql) throws JKDaoException;
+	List<JKDbIdValue> executeQueryAsIdValue(String sql,Object... params) throws JKDaoException;
 
 	/**
 	 * Execute query.
@@ -48,7 +48,7 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	CachedRowSet executeQuery(String query,Object... params) throws JKDaoException;
+	CachedRowSet executeQueryAsCachedRowSet(String query,Object... params) throws JKDaoException;
 
 	/**
 	 * Execute update.
@@ -83,16 +83,6 @@ public interface JKDataAccessObject {
 	 */
 	Object[] exeuteQueryAsArray(String query) throws JKDaoException;
 
-	/**
-	 * Exeute single output query.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the object
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
-	Object exeuteSingleOutputQuery(String query) throws JKDaoException;
 
 	/**
 	 * Exeute single output query.
@@ -152,5 +142,7 @@ public interface JKDataAccessObject {
 	 *             the JK dao exception
 	 */
 	List lstRecords(Finder finder) throws JKDaoException;
+
+	List exeuteQueryAsList(String query, Object... params) throws JKDaoException;
 
 }

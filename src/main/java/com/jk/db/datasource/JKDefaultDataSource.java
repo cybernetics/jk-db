@@ -17,7 +17,7 @@ package com.jk.db.datasource;
 
 import java.util.Properties;
 
-import com.jk.db.JKDbConstants;
+import com.jk.db.dataaccess.JKDbConstants;
 
 /**
  * The Class JKDefaultDataSource.
