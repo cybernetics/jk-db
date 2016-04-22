@@ -23,14 +23,14 @@ import java.sql.SQLException;
  *
  * @author Jalal Kiswani
  */
-public interface Updater {
+public interface JKUpdater {
 
 	/**
 	 * Gets the update sql.
 	 *
 	 * @return the update sql
 	 */
-	public String getUpdateSql();
+	public String getQuery();
 
 	/**
 	 * Sets the paramters.

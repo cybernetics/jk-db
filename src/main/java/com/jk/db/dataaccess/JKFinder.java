@@ -27,14 +27,14 @@ import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
  *
  * @author Jalal Kiswani
  */
-public interface Finder extends JKDBOperation {
+public interface JKFinder extends JKDBOperation {
 
 	/**
 	 * Gets the finder sql.
 	 *
 	 * @return the finder sql
 	 */
-	public String getFinderSql();
+	public String getQuery();
 
 	/**
 	 * Populate.
@@ -51,7 +51,7 @@ public interface Finder extends JKDBOperation {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	public <T> T populate(ResultSet rs) throws SQLException ;
+	public <T> T populate(ResultSet rs) throws SQLException;
 
 	/**
 	 * Sets the paramters.

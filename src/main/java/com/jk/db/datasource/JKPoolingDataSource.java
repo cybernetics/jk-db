@@ -25,7 +25,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import com.jk.db.dataaccess.JKDbConstants;
 import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.util.CollectionsUtil;
-import com.jk.util.StringUtil;
 
 /**
  * The Class JKPoolingDataSource.
@@ -102,7 +101,8 @@ public class JKPoolingDataSource extends JKDefaultDataSource {
 	@Override
 	protected void init() {
 		super.init();
-		this.logger.info("Constructing database pool with settings :".concat(CollectionsUtil.toString(getProperties())));
+		this.logger
+				.info("Constructing database pool with settings :".concat(CollectionsUtil.toString(getProperties())));
 		this.datasource = new BasicDataSource();
 		this.datasource.setDriverClassName(super.getDriverName());
 		this.datasource.setUrl(getDatabaseUrl());

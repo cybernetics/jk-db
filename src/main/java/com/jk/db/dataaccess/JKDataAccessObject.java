@@ -29,19 +29,6 @@ import com.jk.db.dataaccess.exception.JKDaoException;
 public interface JKDataAccessObject {
 
 	/**
-	 * Creates the records from sql.
-	 *
-	 * @param sql
-	 *            the sql
-	 * @param params
-	 *            the params
-	 * @return the list
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
-	List<JKDbIdValue> executeQueryAsIdValue(String sql,Object... params) throws JKDaoException;
-
-	/**
 	 * Execute query.
 	 *
 	 * @param query
@@ -52,7 +39,31 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	CachedRowSet executeQueryAsCachedRowSet(String query,Object... params) throws JKDaoException;
+	CachedRowSet executeQueryAsCachedRowSet(String query, Object... params) throws JKDaoException;
+
+	/**
+	 * Creates the records from sql.
+	 *
+	 * @param sql
+	 *            the sql
+	 * @param params
+	 *            the params
+	 * @return the list
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
+	List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params) throws JKDaoException;
+
+	/**
+	 * Execute update.
+	 *
+	 * @param updater
+	 *            the updater
+	 * @return the int
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
+	int executeUpdate(JKUpdater updater) throws JKDaoException;
 
 	/**
 	 * Execute update.
@@ -68,17 +79,6 @@ public interface JKDataAccessObject {
 	int executeUpdate(String sql, Object... params) throws JKDaoException;
 
 	/**
-	 * Execute update.
-	 *
-	 * @param updater
-	 *            the updater
-	 * @return the int
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
-	int executeUpdate(Updater updater) throws JKDaoException;
-
-	/**
 	 * Exeute query as array.
 	 *
 	 * @param query
@@ -89,6 +89,18 @@ public interface JKDataAccessObject {
 	 */
 	Object[] exeuteQueryAsArray(String query) throws JKDaoException;
 
+	/**
+	 * Exeute query as list.
+	 *
+	 * @param query
+	 *            the query
+	 * @param params
+	 *            the params
+	 * @return the list
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
+	List exeuteQueryAsList(String query, Object... params) throws JKDaoException;
 
 	/**
 	 * Exeute single output query.
@@ -110,7 +122,7 @@ public interface JKDataAccessObject {
 	 *            the finder
 	 * @return the object
 	 */
-	Object findRecord(Finder finder);
+	Object findRecord(JKFinder finder);
 
 	/**
 	 * Gets the next id.
@@ -147,19 +159,6 @@ public interface JKDataAccessObject {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	List lstRecords(Finder finder) throws JKDaoException;
-
-	/**
-	 * Exeute query as list.
-	 *
-	 * @param query
-	 *            the query
-	 * @param params
-	 *            the params
-	 * @return the list
-	 * @throws JKDaoException
-	 *             the JK dao exception
-	 */
-	List exeuteQueryAsList(String query, Object... params) throws JKDaoException;
+	List lstRecords(JKFinder finder) throws JKDaoException;
 
 }

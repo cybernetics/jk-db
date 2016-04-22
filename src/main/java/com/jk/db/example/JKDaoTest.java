@@ -20,13 +20,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.jk.db.dataaccess.Finder;
 import com.jk.db.dataaccess.JKDefaultDao;
-import com.jk.db.dataaccess.Updater;
+import com.jk.db.dataaccess.JKFinder;
+import com.jk.db.dataaccess.JKUpdater;
 import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 import com.jk.util.CollectionsUtil;
-import com.jk.util.StringUtil;
 
 /**
  * The Class JKDaoTest.
@@ -42,10 +41,10 @@ public class JKDaoTest {
 	 */
 	private static Employee findEmployee() {
 		final JKDefaultDao dao = new JKDefaultDao();
-		final Employee emp = (Employee) dao.findRecord(new Finder() {
+		final Employee emp = (Employee) dao.findRecord(new JKFinder() {
 
 			@Override
-			public String getFinderSql() {
+			public String getQuery() {
 				return "SELECT * FROM employees WHERE id=?";
 			}
 
@@ -109,15 +108,15 @@ public class JKDaoTest {
 	 */
 	private static List testGetAll() {
 		final JKDefaultDao dao = new JKDefaultDao();
-		return dao.lstRecords(new Finder() {
+		return dao.lstRecords(new JKFinder() {
 
 			@Override
-			public String getFinderSql() {
+			public String getQuery() {
 				return "SELECT * FROM employees";
 			}
 
 			@Override
-			public Employee populate(final ResultSet rs)throws SQLException {
+			public Employee populate(final ResultSet rs) throws SQLException {
 				final Employee emp = new Employee();
 				emp.setId(rs.getInt("id"));
 				emp.setName(rs.getString("name"));
@@ -148,10 +147,10 @@ public class JKDaoTest {
 	 */
 	private static int testInsert(final Employee emp) {
 		final JKDefaultDao dao = new JKDefaultDao();
-		return dao.executeUpdate(new Updater() {
+		return dao.executeUpdate(new JKUpdater() {
 
 			@Override
-			public String getUpdateSql() {
+			public String getQuery() {
 				return "INSERT INTO employees (name,salary) VALUES(?,?)";
 			}
 

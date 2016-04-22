@@ -82,7 +82,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 	 * boolean)
 	 */
 	@Override
-	public void close(final Connection connection, final boolean commit)  {
+	public void close(final Connection connection, final boolean commit) {
 		try {
 			if (commit) {
 				this.logger.info("commit transaction");

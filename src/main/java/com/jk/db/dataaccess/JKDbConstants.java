@@ -20,7 +20,7 @@ package com.jk.db.dataaccess;
  *
  * @author Jalal Kiswani
  */
-public class JKDbConstants {
+public interface JKDbConstants {
 
 	/** The Constant DEFAULT_CONFIG_FILE_NAME. */
 	public static final String DEFAULT_CONFIG_FILE_NAME = "jk-db.properties";

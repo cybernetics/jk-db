@@ -15,20 +15,17 @@
  */
 package com.jk.db.datasource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import com.jk.context.JKContext;
 import com.jk.context.JKContextFactory;
 import com.jk.db.dataaccess.JKDbConstants;
 import com.jk.db.dataaccess.exception.JKDaoException;
 import com.jk.exceptions.JKException;
 import com.jk.resources.JKResourceLoader;
 import com.jk.resources.JKResourceLoaderFactory;
-import com.jk.util.IOUtil;
 
 /**
  * A factory for creating JKDataSource objects.
@@ -80,7 +77,7 @@ public class JKDataSourceFactory {
 				}
 			}
 			return JKDataSourceFactory.defaultResourceManager;
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new JKException(e);
 		}
 	}
@@ -105,11 +102,11 @@ public class JKDataSourceFactory {
 	 */
 	protected static void tryLoadConfig() throws IOException {
 		String configFileName = JKDataSourceFactory.getConfigFileName();
-		String configPath = JKContextFactory.getCurrentContext().getConfigPath();
+		final String configPath = JKContextFactory.getCurrentContext().getConfigPath();
 
-		JKResourceLoader resourceLoader = JKResourceLoaderFactory.getResourceLoader();
+		final JKResourceLoader resourceLoader = JKResourceLoaderFactory.getResourceLoader();
 		configFileName = configPath.concat(configFileName);
-		InputStream in = resourceLoader.getResourceAsStream(configFileName);
+		final InputStream in = resourceLoader.getResourceAsStream(configFileName);
 		if (in != null) {
 			JKDataSourceFactory.logger.info("Loading exists file :".concat(configFileName));
 			final Properties prop = new Properties();
