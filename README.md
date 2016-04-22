@@ -80,10 +80,10 @@ To be able to run the examples , create table in the database with the below str
 		JKDefaultDao dao=new JKDefaultDao();
 		System.out.println(dao.getSystemDate());
 
-### Execute query and load object using Finder
+### Execute query and load object using JKFinder
 
 		public Employee findEmployee(final int id) {
-		return (Employee)dao.findRecord(new Finder() {
+		return (Employee)dao.findRecord(new JKFinder() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
@@ -91,7 +91,7 @@ To be able to run the examples , create table in the database with the below str
 			}
 
 			@Override
-			public Employee populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
+			public Employee populate(ResultSet rs) throws SQLException {
 				Employee emp = new Employee();
 				emp.setId(rs.getInt("id"));
 				emp.setName(rs.getString("name"));
@@ -106,17 +106,17 @@ To be able to run the examples , create table in the database with the below str
 		});
 	}
 
-## Execute query and load the results into List of objects using Finder
+## Execute query and load the results into List of objects using JKFinder
 
 		public List getAllEmployees() {
-		return dao.lstRecords(new Finder() {
+		return dao.lstRecords(new JKFinder() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
 			}
 
 			@Override
-			public Employee populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException {
+			public Employee populate(ResultSet rs) throws SQLException{
 				Employee emp = new Employee();
 				emp.setId(rs.getInt("id"));
 				emp.setName(rs.getString("name"));
@@ -134,7 +134,7 @@ To be able to run the examples , create table in the database with the below str
 ### Execute data-manipulation using using Updater
 
 		public  int insert(final Employee emp) {
-		return dao.executeUpdate(new Updater() {
+		return dao.executeUpdate(new JKUpdater() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
