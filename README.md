@@ -4,9 +4,10 @@ Light Java database API (Plain JDBC and JPA) for simplifying database driven dev
 ## Features:
 1. Plain JDBC support
 2. ORM support based on JPA standards with hibernate as implementation.
-3. Support for web and desktop 
-4. Unified configurations for JDBC and ORM through unified simple config file
-5. straight forward API
+3. Transparent connection pooling support (Based on Apache DBCP)
+4. Support for any environment (Web or Desktop) 
+5. Unified configurations for JDBC and ORM through unified simple config file (No need for persisitnce.xml or hibernate config)
+6. straight forward API
 
 ## Usage : 
 1- Create new maven project.  
