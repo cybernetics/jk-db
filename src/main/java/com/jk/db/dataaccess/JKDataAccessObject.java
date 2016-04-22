@@ -33,6 +33,8 @@ public interface JKDataAccessObject {
 	 *
 	 * @param sql
 	 *            the sql
+	 * @param params
+	 *            the params
 	 * @return the list
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -44,6 +46,8 @@ public interface JKDataAccessObject {
 	 *
 	 * @param query
 	 *            the query
+	 * @param params
+	 *            the params
 	 * @return the cached row set
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -55,6 +59,8 @@ public interface JKDataAccessObject {
 	 *
 	 * @param sql
 	 *            the sql
+	 * @param params
+	 *            the params
 	 * @return the int
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -143,6 +149,17 @@ public interface JKDataAccessObject {
 	 */
 	List lstRecords(Finder finder) throws JKDaoException;
 
+	/**
+	 * Exeute query as list.
+	 *
+	 * @param query
+	 *            the query
+	 * @param params
+	 *            the params
+	 * @return the list
+	 * @throws JKDaoException
+	 *             the JK dao exception
+	 */
 	List exeuteQueryAsList(String query, Object... params) throws JKDaoException;
 
 }

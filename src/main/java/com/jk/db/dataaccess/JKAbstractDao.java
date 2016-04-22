@@ -48,6 +48,8 @@ import com.sun.rowset.CachedRowSetImpl;
  * @author Jalal Kiswani
  */
 public abstract class JKAbstractDao implements JKDataAccessObject {
+	
+	/** The cache. */
 	// TODO : add support for max cache size
 	private static Map<String, Hashtable<Object, Object>> cache = new Hashtable<String, Hashtable<Object, Object>>();
 
@@ -190,6 +192,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *
 	 * @param sql
 	 *            the sql
+	 * @param params
+	 *            the params
 	 * @return the list
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -253,20 +257,26 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	// }
 
 	/**
-	 * 
+	 * Execute query as string.
+	 *
 	 * @param query
-	 * @return
+	 *            the query
+	 * @return the string
 	 */
 	public String executeQueryAsString(final String query) {
 		return executeQueryAsString(query, ",", System.getProperty("line.separator"));
 	}
 
 	/**
-	 * 
+	 * Execute query as string.
+	 *
 	 * @param query
+	 *            the query
 	 * @param fieldSeparator
+	 *            the field separator
 	 * @param recordsSepartor
-	 * @return
+	 *            the records separtor
+	 * @return the string
 	 */
 	public String executeQueryAsString(final String query, final String fieldSeparator, final String recordsSepartor) {
 		try {
@@ -293,6 +303,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *
 	 * @param query
 	 *            the query
+	 * @param params
+	 *            the params
 	 * @return the cached row set
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -340,6 +352,8 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *
 	 * @param sql
 	 *            the sql
+	 * @param params
+	 *            the params
 	 * @return the int
 	 * @throws JKDaoException
 	 *             the JK dao exception
@@ -447,6 +461,9 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see com.jk.db.dataaccess.JKDataAccessObject#exeuteQueryAsList(java.lang.String, java.lang.Object[])
+	 */
 	@Override
 	public List exeuteQueryAsList(final String query,Object... params) throws JKDaoException {
 		try {
@@ -466,6 +483,9 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.jk.db.dataaccess.JKDataAccessObject#exeuteSingleOutputQuery(java.lang.String, java.lang.Object[])
+	 */
 	@Override
 	public Object exeuteSingleOutputQuery(final String query, Object... params) throws JKDaoException {
 		Connection con = null;
@@ -816,6 +836,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param sql
 	 *            the sql
 	 * @param params
+	 *            the params
 	 * @return the prepared statement
 	 * @throws SQLException
 	 *             the SQL exception

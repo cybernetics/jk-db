@@ -99,8 +99,9 @@ public class JKDataSourceFactory {
 
 	/**
 	 * Try load config.
-	 * 
+	 *
 	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	protected static void tryLoadConfig() throws IOException {
 		String configFileName = JKDataSourceFactory.getConfigFileName();
