@@ -15,7 +15,7 @@ Light Java database API (Plain JDBC and JPA) for simplifying database driven dev
 		<dependency>
 			<groupId>com.jalalkiswani</groupId>
 			<artifactId>jk-db</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.4</version>
 		</dependency>
     
 3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside `build-->plugins` section :
