@@ -1,9 +1,15 @@
 package com.jk.db.dataaccess.orm;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.hibernate.Session;
 import org.hibernate.boot.Metadata;
@@ -22,50 +28,112 @@ public class JKJpaDataAccess implements JKOrmDataAccess {
 
 	@Override
 	public void insert(Object object) {
-		EntityManager manager = JKDataSourceFactory.getDefaultDataSource().createEntityManager();
+		EntityManager manager = getEntityManager();
 		boolean commit = false;
 		try {
 			manager.persist(object);
 			commit = true;
 		} finally {
-			JKDataSourceFactory.getDefaultDataSource().close(manager, commit);
+			close(manager, commit);
 		}
 	}
 
 	@Override
 	public void update(Object object) {
-		// TODO Auto-generated method stub
-
+		EntityManager manager = getEntityManager();
+		boolean commit = false;
+		try {
+			manager.merge(object);
+			commit = true;
+		} finally {
+			close(manager, commit);
+		}
 	}
 
 	@Override
-	public <T> T find(Object id) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> T find(Class<T> clas, Object id) {
+		EntityManager manager = getEntityManager();
+		try {
+			return manager.find(clas, id);
+		} finally {
+			JKDataSourceFactory.getDefaultDataSource().close(manager, true);
+		}
 	}
 
 	@Override
 	public void delete(Object object) {
-		// TODO Auto-generated method stub
-
+		EntityManager manager = getEntityManager();
+		boolean commit = false;
+		try {
+			object = manager.merge(object);
+			manager.remove(object);
+			commit = true;
+		} finally {
+			close(manager, commit);
+		}
 	}
 
 	@Override
 	public void delete(Object id, Class<?> type) {
-		// TODO Auto-generated method stub
-
+		EntityManager manager = getEntityManager();
+		boolean commit = false;
+		try {
+			Object object = manager.find(type, id);
+			manager.remove(object);
+			commit = true;
+		} finally {
+			close(manager, commit);
+		}
 	}
 
 	@Override
-	public <T> List<T> getList(Map<String, Object> paramters) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> List<T> getList(Class<T> clas) {
+		return getList(clas, Collections.EMPTY_MAP);
 	}
 
 	@Override
-	public <T> List<T> getAll(Class<T> clas) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> List<T> getList(Class<T> clas, Map<String, Object> paramters) {
+		EntityManager manager = getEntityManager();
+		try {
+			StringBuffer buf = new StringBuffer("SELECT c FROM ".concat(clas.getSimpleName()).concat(" c "));
+			buf.append(" WHERE 1=1 ");
+			Set<String> keySet = paramters.keySet();
+			for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+				String paramName = (String) iterator.next();
+				buf.append(String.format(" AND c.%s=?", paramters.get(paramName)));
+			}
+
+			return executeQuery(clas, buf.toString(), paramters);
+		} finally {
+			close(manager, true);
+		}
+	}
+
+	public <T> List<T> executeQuery(final Class<T> clas, final String queryString, final Object... paramters) {
+		EntityManager em = getEntityManager();
+		try {
+			Query query = em.createQuery(queryString);
+			for (int i = 0; i < paramters.length; i++) {
+				Object object = paramters[i];
+				query.setParameter(i + 1, object);
+			}
+			List<T> resultList = query.getResultList();
+			if (resultList == null) {
+				return new Vector<>();
+			}
+			return resultList;
+		} finally {
+			close(em, true);
+		}
+	}
+
+	private void close(EntityManager manager, boolean commit) {
+		JKDataSourceFactory.getDefaultDataSource().close(manager, commit);
+	}
+
+	private EntityManager getEntityManager() {
+		EntityManager manager = JKDataSourceFactory.getDefaultDataSource().createEntityManager();
+		return manager;
 	}
 
 }

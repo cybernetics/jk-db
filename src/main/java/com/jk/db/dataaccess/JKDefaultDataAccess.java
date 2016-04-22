@@ -67,38 +67,33 @@ public class JKDefaultDataAccess extends JKAbstractPlainDataAccess implements JK
 
 	@Override
 	public void update(Object object) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <T> T find(Object id) {
-		// TODO Auto-generated method stub
-		return null;
+		jpaDataAccess.update(object);
 	}
 
 	@Override
 	public void delete(Object object) {
-		// TODO Auto-generated method stub
-		
+		jpaDataAccess.delete(object);
 	}
 
 	@Override
 	public void delete(Object id, Class<?> type) {
-		// TODO Auto-generated method stub
-		
+		jpaDataAccess.delete(id,type);
 	}
 
 	@Override
-	public <T> List<T> getList(Map<String, Object> paramters) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> T find(Class<T> clas, Object id) {
+		return jpaDataAccess.find(clas, id);
 	}
 
 	@Override
-	public <T> List<T> getAll(Class<T> clas) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> List<T> getList(Class<T> clas) {
+		return jpaDataAccess.getList(clas);
 	}
+
+	@Override
+	public <T> List<T> getList(Class<T> clas, Map<String, Object> paramters) {
+		return jpaDataAccess.getList(clas, paramters);
+	}
+
 
 }

@@ -10,14 +10,14 @@ public interface JKOrmDataAccess extends JKDataAccess{
 
 	public void update(Object object);
 
-	public <T> T find(Object id);
-
 	public void delete(Object object);
 
 	public void delete(Object id, Class<?> type);
 
-	public <T> List<T> getList(Map<String, Object> paramters);
+	public <T> T find(Class<T> clas, Object id);
 
-	public <T> List<T> getAll(Class<T> clas);
+	public <T> List<T> getList(Class<T> clas);
+
+	public <T> List<T> getList(Class<T> clas, Map<String, Object> paramters);
 
 }
