@@ -1,5 +1,5 @@
 # JK-DB API
-Light Java database API for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
+Light Java database API (Plain JDBC and JPA) for simplifying database driven development with Java. It is straight forward approach with minimal required configurations and environment preparation.
 
 ## Features:
 1. Plain JDBC support
