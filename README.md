@@ -52,7 +52,7 @@ To be able to run the examples , create table in the database with the below str
 ### Dumping table contents as string
 	
 		JKDefaultDao dao=new JKDefaultDao();
-		String rows=dao.executeQueryAsString("SELECT * FROM employees", ",", "\n");
+		String rows=dao.executeQueryAsString("SELECT * FROM employees");
 		System.out.println(rows);
 		
 ### Execute data manipulation statement (insert,update or delete)
