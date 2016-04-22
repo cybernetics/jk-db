@@ -66,6 +66,18 @@ public class JKPlainDataAccessExample {
 		getAllRecordsFromDatabase();
 		findRecordWithId();
 		updateRecord();
+		getAllRecordsFromDatabaseAsObjects();
+	}
+
+	private static void getAllRecordsFromDatabaseAsObjects() {
+		logger.info("get all records as objects");
+
+		String instanceVariables = "id,name,salary";
+		String query = "SELECT * FROM employees ";
+		List<Employee> list = dataAccess.executeQueryAsObjectList(Employee.class, instanceVariables, query);
+		for (Employee employee : list) {
+			System.out.println(ObjectUtil.toString(employee));	
+		}
 	}
 
 	private static void updateRecord() {
@@ -76,10 +88,12 @@ public class JKPlainDataAccessExample {
 
 	private static Employee findRecordWithId() {
 		logger.info("find adam record with id 5");
-		String instanceOrder = "id,name,salary";
-		Employee adam = dataAccess.executeQueryAsSingleObject(Employee.class, instanceOrder, "SELECT * FROM employees WHERE id=? ", 5);
-		System.out.println(ObjectUtil.toString(adam));
-		return adam;
+
+		String instanceVariables = "id,name,salary";
+		String query = "SELECT * FROM employees WHERE id=? ";
+		Employee emp = dataAccess.executeQueryAsSingleObject(Employee.class, instanceVariables, query, 5);
+		System.out.println(ObjectUtil.toString(emp));
+		return emp;
 	}
 
 	private static void getAllRecordsFromDatabase() {

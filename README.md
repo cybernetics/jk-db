@@ -18,7 +18,6 @@ Light JDBC API for simplifying database driven development with Java. It is stra
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.3</version>
         <configuration>
-          <!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
           <source>1.7</source>
           <target>1.7</target>
         </configuration>
@@ -30,6 +29,8 @@ Light JDBC API for simplifying database driven development with Java. It is stra
 	db-url=jdbc:mysql://localhost:3306/app
 	db-user=root
 	db-password=123456
+	# The below used to for JPA entities packages for auto. scanning of entities
+	# db-entities-packages=com.jk
 
 __Note:  the above config file is optional and also the above configurations are already the defaults, so no need to set it up. :)__ 
 Thats it , now you can start us the API , have a look at the example sections for more details on the API 	
@@ -51,39 +52,55 @@ To be able to run the examples , create table in the database with the below str
 
 ### Dumping table contents as string
 	
-		JKDefaultDao dao=new JKDefaultDao();
-		String rows=dao.executeQueryAsString("SELECT * FROM employees");
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
+		String rows = dataAccess.executeQueryAsString("SELECT * FROM employees");
 		System.out.println(rows);
 		
 ### Execute data manipulation statement (insert,update or delete)
 
-		JKDefaultDao dao=new JKDefaultDao();
-		dao.executeUpdate("UPDATE employees SET salary=?",1000);
-		
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
+		dataAccess.execute("DELETE FROM employees");
+		dataAccess.execute("INSERT INTO employees(id,name,salary) VALUES(?,?,?)", id, name, salary);		
+		dataAccess.execute("UPDATE employees SET salary=? WHERE id=?", newSalary, id);
+
+### Find row by id and populate in object
+
+		String query = "SELECT * FROM employees WHERE id=? ";
+		String instanceVariables = "id,name,salary";		
+		Employee emp = dataAccess.executeQueryAsSingleObject(Employee.class, instanceVariables, query, id);
+
+### Find rows list and populate in List of objects
+
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
+		String instanceVariables = "id,name,salary";
+		String query = "SELECT * FROM employees ";		
+		List<Employee> list = dataAccess.executeQueryAsObjectList(Employee.class, instanceVariables, query);		
+	
 ### Execute single output query
 	
-		JKDefaultDao dao=new JKDefaultDao();
-		Object max =  dao.exeuteSingleOutputQuery("SELECT MAX(salary) FROM employees");
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
+		Object max =  dataAccess.exeuteSingleOutputQuery("SELECT MAX(salary) FROM employees");
 		System.out.println(max);
 		
-### Exeute query and get the results as array:
+### Execute query and get the results as array:
 
-		JKDefaultDao dao=new JKDefaultDao();
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
 		Object[] allRows = dao.exeuteQueryAsArray("SELECT * FROM employees");
 		for (Object record: allRows) {
 			Object[] row=(Object[])record;
 			System.out.println(String.format("Id: %s , Name: %s, Salary: %s",row[0],row[1],row[2]));
 		}
 
-### Get System date from database
+### Get System date from database to insure integrity of the system
 
-		JKDefaultDao dao=new JKDefaultDao();
+		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
 		System.out.println(dao.getSystemDate());
 
+## Advanced 
 ### Execute query and load object using JKFinder
 
 		public Employee findEmployee(final int id) {
-		return (Employee)dao.findRecord(new JKFinder() {
+		return dataAccess.findRecord(new JKFinder() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
@@ -109,7 +126,7 @@ To be able to run the examples , create table in the database with the below str
 ## Execute query and load the results into List of objects using JKFinder
 
 		public List getAllEmployees() {
-		return dao.lstRecords(new JKFinder() {
+		return dataAccess.getList(new JKFinder() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
@@ -134,7 +151,7 @@ To be able to run the examples , create table in the database with the below str
 ### Execute data-manipulation using using Updater
 
 		public  int insert(final Employee emp) {
-		return dao.executeUpdate(new JKUpdater() {
+		return dataAccess.executeUpdate(new JKUpdater() {
 
 			@Override
 			public void setParamters(PreparedStatement ps) throws SQLException {
