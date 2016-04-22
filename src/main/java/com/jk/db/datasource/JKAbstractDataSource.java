@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 import com.jk.exceptions.JKException;
 
 /**
@@ -93,7 +93,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 			}
 			close(connection);
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -170,7 +170,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 		try {
 			return connect();
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -180,7 +180,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 	 * @see com.jk.db.datasource.JKDataSource#getQueryConnection()
 	 */
 	@Override
-	public Connection getQueryConnection() throws JKDaoException {
+	public Connection getQueryConnection() throws JKDataAccessException {
 		this.logger.info("get query connection");
 		if (this.queryConnection == null) {
 			this.logger.info("queryConnection is not available , creating new one");

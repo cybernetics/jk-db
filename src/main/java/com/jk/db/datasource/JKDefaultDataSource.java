@@ -15,9 +15,17 @@
  */
 package com.jk.db.datasource;
 
+import java.util.HashMap;
 import java.util.Properties;
 
-import com.jk.db.dataaccess.JKDbConstants;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
+
+import com.jk.db.dataaccess.orm.eclipselink.JKPersistenceUnitProperties;
+import com.jk.db.dataaccess.orm.hibernate.JKEntityManagerFactory;
+import com.jk.db.dataaccess.plain.JKDbConstants;
 
 /**
  * The Class JKDefaultDataSource.
@@ -40,6 +48,8 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 
 	/** The password. */
 	private String password;
+
+	private String entitiesPackages;
 
 	/**
 	 * Instantiates a new JK default data source.
@@ -131,5 +141,54 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 		this.dbUrl = this.config.getProperty(JKDbConstants.PROPERTY_DB_URL, JKDbConstants.DEFAULT_DB_URL);
 		this.userName = this.config.getProperty(JKDbConstants.PROPERTY_DB_USER, JKDbConstants.DEFAULT_DB_USER);
 		this.password = this.config.getProperty(JKDbConstants.PROPERTY_DB_PASSWORD, JKDbConstants.DEFAULT_DB_PASSWORD);
+		this.entitiesPackages= this.config.getProperty(JKDbConstants.PROPERTY_DB_ENTITY_PACKAGES, JKDbConstants.DEFAULT_DB_ENTITY_PACKAGES);
+	}
+
+	@Override
+	public EntityManagerFactory getEntityManagerFactory() {
+		return getEntityManagerFactory(JKDbConstants.DEFAULT_PERSISINCE_UNIT_NAME);
+	}
+
+	@Override
+	public EntityManagerFactory getEntityManagerFactory(String name) {
+
+		Properties prop = new Properties();
+		prop.setProperty(JKPersistenceUnitProperties.JDBC_DRIVER, getDriverName());
+		prop.setProperty(JKPersistenceUnitProperties.JDBC_PASSWORD, getPassword());
+		prop.setProperty(JKPersistenceUnitProperties.JDBC_URL, getDatabaseUrl());
+		prop.setProperty(JKPersistenceUnitProperties.JDBC_USER, getUsername());
+
+		return JKEntityManagerFactory.createEntityManagerFactory(name, prop,getEntitiesPackages());
+	}
+
+	@Override
+	public EntityManager createEntityManager(String emfName) {
+		return getEntityManagerFactory(emfName).createEntityManager();
+	}
+
+	@Override
+	public EntityManager createEntityManager() {
+		EntityManager em = getEntityManagerFactory().createEntityManager();
+		em.getTransaction().begin();
+		;
+		return em;
+
+	}
+
+	@Override
+	public void close(EntityManager em, boolean commit) {
+		if (em != null) {
+			if (commit) {
+				em.getTransaction().commit();
+			} else {
+				em.getTransaction().rollback();
+			}
+			em.close();
+		}
+	}
+
+	@Override
+	public String getEntitiesPackages() {
+		return entitiesPackages;
 	}
 }

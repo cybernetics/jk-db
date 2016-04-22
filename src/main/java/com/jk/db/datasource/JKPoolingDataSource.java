@@ -22,8 +22,8 @@ import java.util.Properties;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import com.jk.db.dataaccess.JKDbConstants;
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
+import com.jk.db.dataaccess.plain.JKDbConstants;
 import com.jk.util.CollectionsUtil;
 
 /**
@@ -82,13 +82,13 @@ public class JKPoolingDataSource extends JKDefaultDataSource {
 	 * @see com.jk.db.datasource.JKAbstractDataSource#getQueryConnection()
 	 */
 	@Override
-	public Connection getQueryConnection() throws JKDaoException {
+	public Connection getQueryConnection() throws JKDataAccessException {
 		Connection queryConnection = super.getQueryConnection();
 		try {
 			testConnection(queryConnection);
 		} catch (final SQLException e) {
 			queryConnection = null;
-			throw new JKDaoException("DATABASE_DOWN_ERROR", e);
+			throw new JKDataAccessException("DATABASE_DOWN_ERROR", e);
 		}
 		return queryConnection;
 	}

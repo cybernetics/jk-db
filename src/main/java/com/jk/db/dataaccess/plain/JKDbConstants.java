@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
 
 /**
  * The Class JKDbConstants.
@@ -69,5 +69,11 @@ public interface JKDbConstants {
 
 	/** The Constant DEFAULT_DB_PASSWORD. */
 	public static final String DEFAULT_DB_PASSWORD = "123456";
+
+	public static final String DEFAULT_PERSISINCE_UNIT_NAME = "JK-DB";
+
+	public static final String PROPERTY_DB_ENTITY_PACKAGES = "db-entities-packages";
+
+	public static final String DEFAULT_DB_ENTITY_PACKAGES = "com.app";
 
 }

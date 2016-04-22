@@ -13,13 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
- * The Interface JKDBOperation.
+ * The Interface Updater.
  *
  * @author Jalal Kiswani
  */
-public interface JKDBOperation {
+public interface JKUpdater {
 
+	/**
+	 * Gets the update sql.
+	 *
+	 * @return the update sql
+	 */
+	public String getQuery();
+
+	/**
+	 * Sets the paramters.
+	 *
+	 * @param ps
+	 *            the new paramters
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public void setParamters(PreparedStatement ps) throws SQLException;
 }

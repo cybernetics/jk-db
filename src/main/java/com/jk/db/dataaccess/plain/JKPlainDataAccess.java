@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
 
 import java.util.List;
 
 import javax.sql.rowset.CachedRowSet;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.JKDataAccess;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 
 /**
  * The Interface JKDataAccessObject.
  *
  * @author Jalal Kiswani
  */
-public interface JKDataAccessObject {
+public interface JKPlainDataAccess extends JKDataAccess{
 
 	/**
 	 * Execute query.
@@ -36,10 +37,10 @@ public interface JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the cached row set
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	CachedRowSet executeQueryAsCachedRowSet(String query, Object... params) throws JKDaoException;
+	CachedRowSet executeQueryAsCachedRowSet(String query, Object... params) throws JKDataAccessException;
 
 	/**
 	 * Creates the records from sql.
@@ -49,10 +50,10 @@ public interface JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params) throws JKDaoException;
+	List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params) throws JKDataAccessException;
 
 	/**
 	 * Execute update.
@@ -60,10 +61,10 @@ public interface JKDataAccessObject {
 	 * @param updater
 	 *            the updater
 	 * @return the int
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int executeUpdate(JKUpdater updater) throws JKDaoException;
+	int executeUpdate(JKUpdater updater) throws JKDataAccessException;
 
 	/**
 	 * Execute update.
@@ -73,10 +74,10 @@ public interface JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the int
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int executeUpdate(String sql, Object... params) throws JKDaoException;
+	int executeUpdate(String sql, Object... params) throws JKDataAccessException;
 
 	/**
 	 * Exeute query as array.
@@ -84,10 +85,10 @@ public interface JKDataAccessObject {
 	 * @param query
 	 *            the query
 	 * @return the object[]
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	Object[] exeuteQueryAsArray(String query) throws JKDaoException;
+	Object[] exeuteQueryAsArray(String query) throws JKDataAccessException;
 
 	/**
 	 * Exeute query as list.
@@ -97,10 +98,10 @@ public interface JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	List exeuteQueryAsList(String query, Object... params) throws JKDaoException;
+	List exeuteQueryAsList(String query, Object... params) throws JKDataAccessException;
 
 	/**
 	 * Exeute single output query.
@@ -110,10 +111,10 @@ public interface JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the object
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	Object exeuteSingleOutputQuery(String query, Object... params) throws JKDaoException;
+	Object exeuteSingleOutputQuery(String query, Object... params) throws JKDataAccessException;
 
 	/**
 	 * Find record.
@@ -132,10 +133,10 @@ public interface JKDataAccessObject {
 	 * @param fieldName
 	 *            the field name
 	 * @return the next id
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int getNextId(String tableName, String fieldName) throws JKDaoException;
+	int getNextId(String tableName, String fieldName) throws JKDataAccessException;
 
 	/**
 	 * Gets the rows count.
@@ -145,10 +146,10 @@ public interface JKDataAccessObject {
 	 * @return the rows count
 	 * @throws NumberFormatException
 	 *             the number format exception
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int getRowsCount(String query) throws NumberFormatException, JKDaoException;
+	int getRowsCount(String query) throws NumberFormatException, JKDataAccessException;
 
 	/**
 	 * Lst records.
@@ -156,9 +157,9 @@ public interface JKDataAccessObject {
 	 * @param finder
 	 *            the finder
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	List lstRecords(JKFinder finder) throws JKDaoException;
+	List lstRecords(JKFinder finder) throws JKDataAccessException;
 
 }

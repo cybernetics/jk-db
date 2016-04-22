@@ -20,7 +20,7 @@ package com.jk.db.dataaccess.exception;
  *
  * @author Jalal Kiswani
  */
-public class JKDaoValidationException extends JKDaoException {
+public class JKDataAccessValidationException extends JKDataAccessException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -2450150009026093119L;
@@ -28,7 +28,7 @@ public class JKDaoValidationException extends JKDaoException {
 	/**
 	 * Instantiates a new JK dao validation exception.
 	 */
-	public JKDaoValidationException() {
+	public JKDataAccessValidationException() {
 		super();
 	}
 
@@ -38,7 +38,7 @@ public class JKDaoValidationException extends JKDaoException {
 	 * @param message
 	 *            the message
 	 */
-	public JKDaoValidationException(final String message) {
+	public JKDataAccessValidationException(final String message) {
 		super(message);
 	}
 
@@ -50,7 +50,7 @@ public class JKDaoValidationException extends JKDaoException {
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoValidationException(final String message, final Throwable cause) {
+	public JKDataAccessValidationException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
@@ -60,7 +60,7 @@ public class JKDaoValidationException extends JKDaoException {
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoValidationException(final Throwable cause) {
+	public JKDataAccessValidationException(final Throwable cause) {
 		super(cause);
 	}
 

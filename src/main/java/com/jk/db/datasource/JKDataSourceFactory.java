@@ -21,8 +21,8 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import com.jk.context.JKContextFactory;
-import com.jk.db.dataaccess.JKDbConstants;
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
+import com.jk.db.dataaccess.plain.JKDbConstants;
 import com.jk.exceptions.JKException;
 import com.jk.resources.JKResourceLoader;
 import com.jk.resources.JKResourceLoaderFactory;
@@ -87,7 +87,7 @@ public class JKDataSourceFactory {
 	 *
 	 * @param impl
 	 *            the new default data source
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public static void setDefaultDataSource(final JKDataSource impl) {

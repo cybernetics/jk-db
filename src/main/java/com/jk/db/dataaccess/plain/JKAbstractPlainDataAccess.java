@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 import com.jk.db.datasource.JKDataSource;
 import com.jk.db.datasource.JKDataSourceFactory;
@@ -45,7 +45,7 @@ import com.sun.rowset.CachedRowSetImpl;
  *
  * @author Jalal Kiswani
  */
-public abstract class JKAbstractDao implements JKDataAccessObject {
+public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 
 	/** cache for single objects results */
 	private static Map<String, Hashtable<Object, Object>> objectsCache = new Hashtable<String, Hashtable<Object, Object>>();
@@ -56,37 +56,37 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	/** The logger. */
 	Logger logger = Logger.getLogger(getClass().getName());
 
-	/** The connection manager. */
-	private JKDataSource dataSource;
+//	/** The connection manager. */
+//	private JKDataSource dataSource;
 
-	/** The session. */
-	private JKSession session;
+//	/** The session. */
+//	private JKSession session;
 
 	/**
 	 * Instantiates a new JK abstract dao.
 	 */
-	public JKAbstractDao() {
+	public JKAbstractPlainDataAccess() {
 	}
 
-	/**
-	 * Instantiates a new JK abstract dao.
-	 *
-	 * @param dataSource
-	 *            the connection manager
-	 */
-	public JKAbstractDao(final JKDataSource dataSource) {
-		this.dataSource = dataSource;
-	}
+//	/**
+//	 * Instantiates a new JK abstract dao.
+//	 *
+//	 * @param dataSource
+//	 *            the connection manager
+//	 */
+//	public JKAbstractPlainDataAccess(final JKDataSource dataSource) {
+//		this.dataSource = dataSource;
+//	}
 
-	/**
-	 * Instantiates a new JK abstract dao.
-	 *
-	 * @param session
-	 *            the session
-	 */
-	public JKAbstractDao(final JKSession session) {
-		setSession(session);
-	}
+//	/**
+//	 * Instantiates a new JK abstract dao.
+//	 *
+//	 * @param session
+//	 *            the session
+//	 */
+//	public JKAbstractPlainDataAccess(final JKSession session) {
+//		setSession(session);
+//	}
 
 	/**
 	 * Close.
@@ -98,15 +98,15 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 		if (connection == null) {
 			return;
 		}
-		if (this.session == null) {
+//		if (this.session == null) {
 			this.logger.info("closing connection by the datasource");
 			getDataSource().close(connection);
-		} else {
-			this.logger.info("connection not closed since its part of session (trx)");
-			// this connection is part of transaction , dont close it , it
-			// should be closed by the object
-			// who passed the connection to this object
-		}
+//		} else {
+//			this.logger.info("connection not closed since its part of session (trx)");
+//			// this connection is part of transaction , dont close it , it
+//			// should be closed by the object
+//			// who passed the connection to this object
+//		}
 	}
 
 	/**
@@ -191,7 +191,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the cached row set
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
@@ -208,7 +208,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			impl.populate(rs);
 			return impl;
 		} catch (final SQLException ex) {
-			throw new JKDaoException(ex.getMessage(), ex);
+			throw new JKDataAccessException(ex.getMessage(), ex);
 		} finally {
 			close(rs);
 			close(con);
@@ -223,12 +223,12 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
 	public List<JKDbIdValue> executeQueryAsIdValue(final String sql, final Object... params) {
-		if (JKAbstractDao.listsCache.get(sql) == null) {
+		if (JKAbstractPlainDataAccess.listsCache.get(sql) == null) {
 			Connection con = null;
 			ResultSet rs = null;
 			PreparedStatement ps = null;
@@ -253,16 +253,16 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 					}
 					results.add(combo);
 				}
-				JKAbstractDao.listsCache.put(sql, results);
-			} catch (final JKDaoException e) {
+				JKAbstractPlainDataAccess.listsCache.put(sql, results);
+			} catch (final JKDataAccessException e) {
 				throw e;
 			} catch (final SQLException e) {
-				throw new JKDaoException(e);
+				throw new JKDataAccessException(e);
 			} finally {
 				close(rs, ps, con);
 			}
 		}
-		return (List<JKDbIdValue>) JKAbstractDao.listsCache.get(sql);
+		return (List<JKDbIdValue>) JKAbstractPlainDataAccess.listsCache.get(sql);
 	}
 
 	/**
@@ -303,7 +303,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			return buf.toString();
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -313,11 +313,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param updater
 	 *            the updater
 	 * @return the int
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
-	public int executeUpdate(final JKUpdater updater) throws JKDaoException {
+	public int executeUpdate(final JKUpdater updater) throws JKDataAccessException {
 		Connection connection = null;
 		PreparedStatement ps = null;
 		try {
@@ -334,7 +334,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			return getGeneratedKeys(ps);
 			// no auto increment fields
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		} finally {
 			close(ps, connection);
 		}
@@ -348,11 +348,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param ignoreRecordNotFoundException
 	 *            the ignore record not found exception
 	 * @return the int
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public int executeUpdate(final JKUpdater updater, final boolean ignoreRecordNotFoundException)
-			throws JKDaoException {
+			throws JKDataAccessException {
 		try {
 			return executeUpdate(updater);
 		} catch (final JKRecordNotFoundException e) {
@@ -371,11 +371,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param params
 	 *            the params
 	 * @return the int
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
-	public int executeUpdate(final String sql, final Object... params) throws JKDaoException {
+	public int executeUpdate(final String sql, final Object... params) throws JKDataAccessException {
 		Connection connection = null;
 		PreparedStatement ps = null;
 		try {
@@ -387,7 +387,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			// no auto increment fields
 			return count;
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		} finally {
 			close(ps);
 			close(connection);
@@ -400,11 +400,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param query
 	 *            the query
 	 * @return the object[]
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
-	public Object[] exeuteQueryAsArray(final String query) throws JKDaoException {
+	public Object[] exeuteQueryAsArray(final String query) throws JKDataAccessException {
 		try {
 			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
 			final ResultSetMetaData meta = rs.getMetaData();
@@ -418,7 +418,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			return rows.toArray();
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -429,7 +429,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * String, java.lang.Object[])
 	 */
 	@Override
-	public List exeuteQueryAsList(final String query, final Object... params) throws JKDaoException {
+	public List exeuteQueryAsList(final String query, final Object... params) throws JKDataAccessException {
 		try {
 			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
 			final ResultSetMetaData meta = rs.getMetaData();
@@ -443,7 +443,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			return rows;
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -455,7 +455,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * .String, java.lang.Object[])
 	 */
 	@Override
-	public Object exeuteSingleOutputQuery(final String query, final Object... params) throws JKDaoException {
+	public Object exeuteSingleOutputQuery(final String query, final Object... params) throws JKDataAccessException {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -468,7 +468,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			throw new JKRecordNotFoundException("No value available for query :".concat(query));
 		} catch (final SQLException ex) {
-			throw new JKDaoException(ex.getMessage().concat(",".concat(query)), ex);
+			throw new JKDataAccessException(ex.getMessage().concat(",".concat(query)), ex);
 		} finally {
 			close(rs, ps, con);
 		}
@@ -482,7 +482,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return the object
 	 * @throws JKRecordNotFoundException
 	 *             the JK record not found exception
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
@@ -500,7 +500,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			throw new JKRecordNotFoundException("REOCRD_NOT_FOUND");
 		} catch (final SQLException e) {
-			throw new JKDaoException(
+			throw new JKDataAccessException(
 					"Error while executing the following select statement : \n".concat(finder.getQuery()), e);
 		} finally {
 			close(rs, ps, connection);
@@ -519,16 +519,16 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return the object
 	 * @throws JKRecordNotFoundException
 	 *             the JK record not found exception
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public Object findRecord(final JKFinder finder, final String tableName, final Object recordId)
-			throws JKRecordNotFoundException, JKDaoException {
-		if (JKAbstractDao.objectsCache.get(tableName) == null) {
-			JKAbstractDao.objectsCache.put(tableName, new Hashtable<Object, Object>());
+			throws JKRecordNotFoundException, JKDataAccessException {
+		if (JKAbstractPlainDataAccess.objectsCache.get(tableName) == null) {
+			JKAbstractPlainDataAccess.objectsCache.put(tableName, new Hashtable<Object, Object>());
 		}
 		try {
-			final Hashtable<Object, Object> tableCache = JKAbstractDao.objectsCache.get(tableName);
+			final Hashtable<Object, Object> tableCache = JKAbstractPlainDataAccess.objectsCache.get(tableName);
 			if (tableCache.get(recordId) == null) {
 				// System.out.println("loading record "+tableName);
 				final Object record = findRecord(finder);
@@ -551,7 +551,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * Gets the connection.
 	 *
 	 * @return the connection
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	protected Connection getConnection() {
@@ -564,14 +564,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param query
 	 *            the query
 	 * @return the connection
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	protected Connection getConnection(final boolean query) {
 		this.logger.info("get connection with query flag : " + query);
-		if (this.session != null && !this.session.isClosed()) {
-			return this.session.getConnection();
-		}
+//		if (this.session != null && !this.session.isClosed()) {
+//			return this.session.getConnection();
+//		}
 		if (query) {
 			return getDataSource().getQueryConnection();
 		} else {
@@ -585,9 +585,9 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return the data source
 	 */
 	protected JKDataSource getDataSource() {
-		if (this.dataSource != null) {
-			return this.dataSource;
-		}
+//		if (this.dataSource != null) {
+//			return this.dataSource;
+//		}
 		return JKDataSourceFactory.getDefaultDataSource();
 	}
 
@@ -601,9 +601,9 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *             the SQL exception
 	 */
 	protected int getGeneratedKeys(final PreparedStatement ps) throws SQLException {
-		if (JKDataSourceUtil.isOracle(getDataSource())) {
-			throw new IllegalStateException("This method is not avilable on oracle db");
-		}
+//		if (JKDataSourceUtil.isOracle(getDataSource())) {
+//			throw new IllegalStateException("This method is not avilable on oracle db");
+//		}
 		final ResultSet idRs = ps.getGeneratedKeys();
 		if (idRs.next()) {
 			final Object object = idRs.getObject(1);
@@ -622,11 +622,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param fieldName
 	 *            the field name
 	 * @return the next id
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public int getNextId(final Connection connectoin, final String tableName, final String fieldName)
-			throws JKDaoException {
+			throws JKDataAccessException {
 		return getNextId(connectoin, tableName, fieldName, null);
 	}
 
@@ -642,7 +642,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param condition
 	 *            the condition
 	 * @return the next id
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public int getNextId(final Connection con, final String tableName, final String fieldName, final String condition) {
@@ -666,7 +666,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			return ser;
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		} finally {
 			close(ps);
 		}
@@ -680,11 +680,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param fieldName
 	 *            the field name
 	 * @return the next id
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
-	public int getNextId(final String tableName, final String fieldName) throws JKDaoException {
+	public int getNextId(final String tableName, final String fieldName) throws JKDataAccessException {
 		final Connection connection = getConnection(true);
 		try {
 			return getNextId(connection, tableName, fieldName);
@@ -703,10 +703,10 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param condition
 	 *            the condition
 	 * @return the next id
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public int getNextId(final String tableName, final String fieldName, final String condition) throws JKDaoException {
+	public int getNextId(final String tableName, final String fieldName, final String condition) throws JKDataAccessException {
 		final Connection connection = getConnection(true);
 		try {
 			return getNextId(connection, tableName, fieldName, condition);
@@ -721,7 +721,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @see com.jk.db.JKDataAccessObject#getRowsCount(java.lang.String)
 	 */
 	@Override
-	public int getRowsCount(final String query) throws NumberFormatException, JKDaoException {
+	public int getRowsCount(final String query) throws NumberFormatException, JKDataAccessException {
 		final String sql = "SELECT COUNT(*) FROM (" + query + ") ";
 		// System.out.println(sql);
 		return new Integer(exeuteSingleOutputQuery(sql).toString());
@@ -733,10 +733,10 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @return the system date
 	 * @throws JKRecordNotFoundException
 	 *             the JK record not found exception
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public Date getSystemDate() throws JKRecordNotFoundException, JKDaoException {
+	public Date getSystemDate() throws JKRecordNotFoundException, JKDataAccessException {
 		return (Date) exeuteSingleOutputQuery("SELECT SYSDATE()");
 	}
 
@@ -746,11 +746,11 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param finder
 	 *            the finder
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	@Override
-	public List lstRecords(final JKFinder finder) throws JKDaoException {
+	public List lstRecords(final JKFinder finder) throws JKDataAccessException {
 		// System.out.println("Executing : "+finder.getFinderSql());
 		Connection connection = null;
 		PreparedStatement ps = null;
@@ -770,7 +770,7 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			if (ps != null) {
 				this.logger.severe(ps.toString());
 			}
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		} finally {
 			close(rs, ps, connection);
 		}
@@ -784,14 +784,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 * @param key
 	 *            the key
 	 * @return the list
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public List lstRecords(final JKFinder finder, final String key) throws JKDaoException {
-		if (JKAbstractDao.listsCache.get(key) == null) {
-			JKAbstractDao.listsCache.put(key, lstRecords(finder));
+	public List lstRecords(final JKFinder finder, final String key) throws JKDataAccessException {
+		if (JKAbstractPlainDataAccess.listsCache.get(key) == null) {
+			JKAbstractPlainDataAccess.listsCache.put(key, lstRecords(finder));
 		}
-		return JKAbstractDao.listsCache.get(key);
+		return JKAbstractPlainDataAccess.listsCache.get(key);
 	}
 
 	/**
@@ -853,20 +853,20 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 			}
 			System.out.println("///////////////////////");
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 
 	}
 
-	/**
-	 * Sets the session.
-	 *
-	 * @param session
-	 *            the new session
-	 */
-	public void setSession(final JKSession session) {
-		this.session = session;
-	}
+//	/**
+//	 * Sets the session.
+//	 *
+//	 * @param session
+//	 *            the new session
+//	 */
+//	public void setSession(final JKSession session) {
+//		this.session = session;
+//	}
 
 	/**
 	 * Removes the list cache.
@@ -875,14 +875,14 @@ public abstract class JKAbstractDao implements JKDataAccessObject {
 	 *            the query
 	 */
 	public static void removeListCache(final String query) {
-		JKAbstractDao.listsCache.remove(query);
+		JKAbstractPlainDataAccess.listsCache.remove(query);
 	}
 
 	/**
 	 * Reset cache.
 	 */
 	public synchronized static void resetCache() {
-		JKAbstractDao.objectsCache.clear();
-		JKAbstractDao.listsCache.clear();
+		JKAbstractPlainDataAccess.objectsCache.clear();
+		JKAbstractPlainDataAccess.listsCache.clear();
 	}
 }

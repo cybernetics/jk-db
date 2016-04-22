@@ -20,7 +20,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 
 /**
  * The Interface JKDataSource.
@@ -44,7 +47,7 @@ public interface JKDataSource {
 	 *            the connection
 	 * @param commit
 	 *            the commit
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public void close(Connection connection, boolean commit);
@@ -69,19 +72,19 @@ public interface JKDataSource {
 	 * Creates the session.
 	 *
 	 * @return the JK session
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public JKSession createSession() throws JKDaoException;
+	public JKSession createSession() throws JKDataAccessException;
 
 	/**
 	 * Gets the connection.
 	 *
 	 * @return the connection
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public Connection getConnection() throws JKDaoException;
+	public Connection getConnection() throws JKDataAccessException;
 
 	/**
 	 * Gets the database url.
@@ -126,10 +129,10 @@ public interface JKDataSource {
 	 * Gets the query connection.
 	 *
 	 * @return the query connection
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public Connection getQueryConnection() throws JKDaoException;
+	public Connection getQueryConnection() throws JKDataAccessException;
 
 	/**
 	 * Gets the test query.
@@ -138,10 +141,22 @@ public interface JKDataSource {
 	 */
 	public String getTestQuery();
 
+	public String getEntitiesPackages();
+
 	/**
 	 * Gets the username.
 	 *
 	 * @return the username
 	 */
 	public String getUsername();
+
+	public EntityManagerFactory getEntityManagerFactory();
+
+	public EntityManagerFactory getEntityManagerFactory(String name);
+
+	public EntityManager createEntityManager(String emfName);
+
+	public EntityManager createEntityManager();
+
+	public void close(EntityManager em, boolean commit);
 }

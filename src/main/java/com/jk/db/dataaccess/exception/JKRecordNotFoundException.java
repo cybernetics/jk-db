@@ -20,7 +20,7 @@ package com.jk.db.dataaccess.exception;
  *
  * @author Jalal Kiswani
  */
-public class JKRecordNotFoundException extends JKDaoException {
+public class JKRecordNotFoundException extends JKDataAccessException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;

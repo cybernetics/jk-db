@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
 
 import java.io.Serializable;
 import java.util.Vector;

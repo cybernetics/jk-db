@@ -15,14 +15,19 @@
  */
 package com.jk.db.example;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * The Class Employee.
  *
  * @author Jalal Kiswani
  */
+@Entity(name="employees")
 public class Employee {
 
 	/** The id. */
+	@Id
 	int id;
 
 	/** The name. */

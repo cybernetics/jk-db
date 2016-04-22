@@ -22,14 +22,14 @@ package com.jk.db.datasource;
  */
 public class JKDataSourceUtil {
 
-	/**
-	 * Checks if is oracle.
-	 *
-	 * @param manager
-	 *            the manager
-	 * @return true, if is oracle
-	 */
-	public static boolean isOracle(final JKDataSource manager) {
-		return manager.getDatabaseUrl().toLowerCase().contains("oracle");
-	}
+//	/**
+//	 * Checks if is oracle.
+//	 *
+//	 * @param manager
+//	 *            the manager
+//	 * @return true, if is oracle
+//	 */
+//	public static boolean isOracle() {
+//		return manager.getDatabaseUrl().toLowerCase().contains("oracle");
+//	}
 }

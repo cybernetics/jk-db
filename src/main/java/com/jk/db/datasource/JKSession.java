@@ -18,7 +18,7 @@ package com.jk.db.datasource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 
 /**
  * Manage all related trx managed in non-trx container.
@@ -50,15 +50,15 @@ public class JKSession {
 	 *
 	 * @param connection
 	 *            the connection
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	private JKSession(final Connection connection) throws JKDaoException {
+	private JKSession(final Connection connection) throws JKDataAccessException {
 		this.connection = connection;
 		try {
 			connection.setAutoCommit(false);
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		}
 	}
 
@@ -67,10 +67,10 @@ public class JKSession {
 	 *
 	 * @param connectionManager
 	 *            the connection manager
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public JKSession(final JKDataSource connectionManager) throws JKDaoException {
+	public JKSession(final JKDataSource connectionManager) throws JKDataAccessException {
 		this(connectionManager.getConnection());
 		this.connectionManager = connectionManager;
 	}
@@ -88,10 +88,10 @@ public class JKSession {
 	/**
 	 * Close.
 	 *
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public void close() throws JKDaoException {
+	public void close() throws JKDataAccessException {
 		if (this.parentSession != null) {
 			// Just return , because this would be called from method that
 			// doesn't know it has been
@@ -109,7 +109,7 @@ public class JKSession {
 				this.connection.rollback();
 			}
 		} catch (final SQLException e) {
-			throw new JKDaoException(e);
+			throw new JKDataAccessException(e);
 		} finally {
 			// the abstract resource manage will check internally on the
 			// nullable and isClosed properties for the connection
@@ -125,10 +125,10 @@ public class JKSession {
 	 *
 	 * @param commit
 	 *            the commit
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public void close(final boolean commit) throws JKDaoException {
+	public void close(final boolean commit) throws JKDataAccessException {
 		commit(commit);
 		close();
 	}

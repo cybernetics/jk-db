@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jk.db.dataaccess;
+package com.jk.db.dataaccess.plain;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.jk.db.dataaccess.exception.JKDaoException;
+import com.jk.db.dataaccess.exception.JKDataAccessException;
 import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 
 /**
@@ -48,7 +48,7 @@ public interface JKFinder extends JKDBOperation {
 	 *             the SQL exception
 	 * @throws JKRecordNotFoundException
 	 *             the JK record not found exception
-	 * @throws JKDaoException
+	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
 	public <T> T populate(ResultSet rs) throws SQLException;

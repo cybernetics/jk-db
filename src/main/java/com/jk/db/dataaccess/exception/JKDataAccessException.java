@@ -24,18 +24,18 @@ import com.jk.exceptions.JKException;
  *
  * @author Jalal Kiswani
  */
-public class JKDaoException extends JKException {
+public class JKDataAccessException extends JKException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/** The exception. */
-	ArrayList<JKDaoException> exception = new ArrayList<JKDaoException>();
+	ArrayList<JKDataAccessException> exception = new ArrayList<JKDataAccessException>();
 
 	/**
 	 * Instantiates a new JK dao exception.
 	 */
-	public JKDaoException() {
+	public JKDataAccessException() {
 		super();
 	}
 
@@ -45,7 +45,7 @@ public class JKDaoException extends JKException {
 	 * @param message
 	 *            String
 	 */
-	public JKDaoException(final String message) {
+	public JKDataAccessException(final String message) {
 		super(message);
 	}
 
@@ -57,7 +57,7 @@ public class JKDaoException extends JKException {
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoException(final String message, final Throwable cause) {
+	public JKDataAccessException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
@@ -67,7 +67,7 @@ public class JKDaoException extends JKException {
 	 * @param cause
 	 *            the cause
 	 */
-	public JKDaoException(final Throwable cause) {
+	public JKDataAccessException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -77,7 +77,7 @@ public class JKDaoException extends JKException {
 	 * @param e
 	 *            the e
 	 */
-	public void add(final JKDaoException e) {
+	public void add(final JKDataAccessException e) {
 		this.exception.add(e);
 	}
 
