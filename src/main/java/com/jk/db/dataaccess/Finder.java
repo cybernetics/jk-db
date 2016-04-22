@@ -51,7 +51,7 @@ public interface Finder extends JKDBOperation {
 	 * @throws JKDaoException
 	 *             the JK dao exception
 	 */
-	public <T> T populate(ResultSet rs) throws SQLException, JKRecordNotFoundException, JKDaoException;
+	public <T> T populate(ResultSet rs) throws SQLException ;
 
 	/**
 	 * Sets the paramters.

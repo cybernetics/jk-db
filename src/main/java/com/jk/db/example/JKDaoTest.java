@@ -117,8 +117,7 @@ public class JKDaoTest {
 			}
 
 			@Override
-			public Employee populate(final ResultSet rs)
-					throws SQLException, JKRecordNotFoundException, JKDaoException {
+			public Employee populate(final ResultSet rs)throws SQLException {
 				final Employee emp = new Employee();
 				emp.setId(rs.getInt("id"));
 				emp.setName(rs.getString("name"));
