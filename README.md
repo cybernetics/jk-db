@@ -175,6 +175,8 @@ To be able to run the examples , create table in the database with the below str
 	}
 	
 ## ORM Examples:
+*Coming soon...*
+
 ##Class diagram
 ![alt tag](https://github.com/kiswanij/jk-db/blob/master/design/jk-db-class-diagram-jalal-kiswani.PNG)
 
