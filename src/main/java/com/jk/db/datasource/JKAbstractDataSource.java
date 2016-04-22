@@ -23,6 +23,7 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 import com.jk.db.dataaccess.exception.JKDataAccessException;
+import com.jk.db.dataaccess.plain.JKAbstractPlainDataAccess;
 import com.jk.exceptions.JKException;
 
 /**
@@ -165,8 +166,7 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 			loadDriverClass();
 			this.driverClassLoaded = true;
 		}
-		this.logger.info(
-				"Creating connection , current opened connections : " + (++JKAbstractDataSource.connectionsCount));
+		this.logger.info("Creating connection , current opened connections : " + (++JKAbstractDataSource.connectionsCount));
 		try {
 			return connect();
 		} catch (final SQLException e) {
@@ -200,4 +200,23 @@ public abstract class JKAbstractDataSource implements JKDataSource {
 		}
 	}
 
+	@Override
+	public JKDatabaseType getDatabaseType() {
+		String driverName = getDriverName().toLowerCase();
+		if (driverName.contains("oracle")) {
+			return JKDatabaseType.ORACLE;
+		}
+		if (driverName.contains("mysql")) {
+			return JKDatabaseType.MYSQL;
+		}
+		if (driverName.contains("microsoft")) {
+			return JKDatabaseType.SQLSERVER;
+		}
+		return JKDatabaseType.OTHER;
+	}
+
+	@Override
+	public void resetCache() {
+		JKAbstractPlainDataAccess.resetCache();
+	}
 }

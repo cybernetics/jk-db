@@ -21,8 +21,10 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import com.jk.context.JKContextFactory;
+import com.jk.db.dataaccess.JKDefaultDataAccess;
 import com.jk.db.dataaccess.exception.JKDataAccessException;
 import com.jk.db.dataaccess.plain.JKDbConstants;
+import com.jk.db.dataaccess.plain.JKPlainDataAccess;
 import com.jk.exceptions.JKException;
 import com.jk.resources.JKResourceLoader;
 import com.jk.resources.JKResourceLoaderFactory;
@@ -65,7 +67,7 @@ public class JKDataSourceFactory {
 	 *
 	 * @return the default data source
 	 */
-	public static JKDataSource getDefaultDataSource() {
+	public static JKDataSource getDataSource() {
 		try {
 			JKDataSourceFactory.logger.info("get default datasource");
 			if (JKDataSourceFactory.defaultResourceManager == null) {
@@ -115,4 +117,9 @@ public class JKDataSourceFactory {
 			JKDataSourceFactory.defaultResourceManager = JKDataSourceFactory.createInstance(prop);
 		}
 	}
+	
+	public static JKPlainDataAccess getPlainDataAccess(){
+		return new JKDefaultDataAccess();
+	}
+	
 }

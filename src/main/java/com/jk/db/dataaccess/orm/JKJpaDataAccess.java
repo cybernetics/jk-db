@@ -56,7 +56,7 @@ public class JKJpaDataAccess implements JKOrmDataAccess {
 		try {
 			return manager.find(clas, id);
 		} finally {
-			JKDataSourceFactory.getDefaultDataSource().close(manager, true);
+			JKDataSourceFactory.getDataSource().close(manager, true);
 		}
 	}
 
@@ -128,11 +128,11 @@ public class JKJpaDataAccess implements JKOrmDataAccess {
 	}
 
 	private void close(EntityManager manager, boolean commit) {
-		JKDataSourceFactory.getDefaultDataSource().close(manager, commit);
+		JKDataSourceFactory.getDataSource().close(manager, commit);
 	}
 
 	private EntityManager getEntityManager() {
-		EntityManager manager = JKDataSourceFactory.getDefaultDataSource().createEntityManager();
+		EntityManager manager = JKDataSourceFactory.getDataSource().createEntityManager();
 		return manager;
 	}
 

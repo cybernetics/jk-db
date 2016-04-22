@@ -23,11 +23,8 @@ import javax.persistence.Id;
  *
  * @author Jalal Kiswani
  */
-@Entity(name="employees")
 public class Employee {
 
-	/** The id. */
-	@Id
 	int id;
 
 	/** The name. */
@@ -35,6 +32,15 @@ public class Employee {
 
 	/** The salary. */
 	double salary;
+
+	public Employee() {
+	}
+
+	public Employee(int id, String name, int salary) {
+		this.id = id;
+		this.name = name;
+		this.salary = salary;
+	}
 
 	/**
 	 * Gets the id.

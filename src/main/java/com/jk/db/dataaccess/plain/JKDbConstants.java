@@ -76,4 +76,8 @@ public interface JKDbConstants {
 
 	public static final String DEFAULT_DB_ENTITY_PACKAGES = "com.app";
 
+	public static final String DB_MAX_CACHE_SIZE = "max-cache-size";
+
+	public static final String DB_MAX_CACHE_SIZE_DEFAULT = "1000";
+
 }

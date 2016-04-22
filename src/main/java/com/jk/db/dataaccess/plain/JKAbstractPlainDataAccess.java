@@ -15,6 +15,7 @@
  */
 package com.jk.db.dataaccess.plain;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,6 +23,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -35,9 +37,9 @@ import com.jk.db.dataaccess.exception.JKDataAccessException;
 import com.jk.db.dataaccess.exception.JKRecordNotFoundException;
 import com.jk.db.datasource.JKDataSource;
 import com.jk.db.datasource.JKDataSourceFactory;
-import com.jk.db.datasource.JKDataSourceUtil;
 import com.jk.db.datasource.JKSession;
 import com.jk.util.ConversionUtil;
+import com.jk.util.ObjectUtil;
 import com.sun.rowset.CachedRowSetImpl;
 
 /**
@@ -46,7 +48,6 @@ import com.sun.rowset.CachedRowSetImpl;
  * @author Jalal Kiswani
  */
 public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
-
 	/** cache for single objects results */
 	private static Map<String, Hashtable<Object, Object>> objectsCache = new Hashtable<String, Hashtable<Object, Object>>();
 
@@ -56,65 +57,20 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 	/** The logger. */
 	Logger logger = Logger.getLogger(getClass().getName());
 
-//	/** The connection manager. */
-//	private JKDataSource dataSource;
-
-//	/** The session. */
-//	private JKSession session;
-
 	/**
 	 * Instantiates a new JK abstract dao.
 	 */
 	public JKAbstractPlainDataAccess() {
 	}
 
-//	/**
-//	 * Instantiates a new JK abstract dao.
-//	 *
-//	 * @param dataSource
-//	 *            the connection manager
-//	 */
-//	public JKAbstractPlainDataAccess(final JKDataSource dataSource) {
-//		this.dataSource = dataSource;
-//	}
-
-//	/**
-//	 * Instantiates a new JK abstract dao.
-//	 *
-//	 * @param session
-//	 *            the session
-//	 */
-//	public JKAbstractPlainDataAccess(final JKSession session) {
-//		setSession(session);
-//	}
-
-	/**
-	 * Close.
-	 *
-	 * @param connection
-	 *            the connection
-	 */
 	protected void close(final Connection connection) {
+		this.logger.info("closing connection");
 		if (connection == null) {
 			return;
 		}
-//		if (this.session == null) {
-			this.logger.info("closing connection by the datasource");
-			getDataSource().close(connection);
-//		} else {
-//			this.logger.info("connection not closed since its part of session (trx)");
-//			// this connection is part of transaction , dont close it , it
-//			// should be closed by the object
-//			// who passed the connection to this object
-//		}
+		getDataSource().close(connection);
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param ps
-	 *            the ps
-	 */
 	protected void close(final java.sql.PreparedStatement ps) {
 		if (ps != null) {
 			try {
@@ -124,25 +80,11 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param ps
-	 *            the ps
-	 * @param c
-	 *            the c
-	 */
-	public void close(final PreparedStatement ps, final Connection c) {
+	protected void close(final PreparedStatement ps, final Connection c) {
 		close(ps);
 		close(c);
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param rs
-	 *            the rs
-	 */
 	protected void close(final ResultSet rs) {
 		if (rs != null) {
 			try {
@@ -152,29 +94,13 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param rs
-	 *            the rs
-	 * @param ps
-	 *            the ps
-	 * @param c
-	 *            the c
-	 */
-	public void close(final ResultSet rs, final PreparedStatement ps, final Connection c) {
+	protected void close(final ResultSet rs, final PreparedStatement ps, final Connection c) {
 		close(rs);
 		close(ps);
 		close(c);
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param ps
-	 *            the ps
-	 */
-	public void close(final Statement ps) {
+	protected void close(final Statement ps) {
 		if (ps != null) {
 			try {
 				ps.close();
@@ -183,27 +109,16 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Execute query.
-	 *
-	 * @param query
-	 *            the query
-	 * @param params
-	 *            the params
-	 * @return the cached row set
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
 	public CachedRowSet executeQueryAsCachedRowSet(final String query, final Object... params) {
-		Statement ps = null;
+		logger.info(String.format("executeQueryAsCachedRowSet , Query(%s) Params(%s)", query, Arrays.toString(params)));
+		PreparedStatement ps = null;
 		Connection con = null;
 		ResultSet rs = null;
-		// System.out.println(query);
 		try {
 			con = getConnection();
 			ps = prepareStatement(con, query, params);
-			rs = ps.executeQuery(query);
+			rs = ps.executeQuery();
 			final CachedRowSet impl = new CachedRowSetImpl();
 			impl.populate(rs);
 			return impl;
@@ -215,26 +130,16 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Creates the records from sql.
-	 *
-	 * @param sql
-	 *            the sql
-	 * @param params
-	 *            the params
-	 * @return the list
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public List<JKDbIdValue> executeQueryAsIdValue(final String sql, final Object... params) {
-		if (JKAbstractPlainDataAccess.listsCache.get(sql) == null) {
+	public List<JKDbIdValue> executeQueryAsIdValue(final String query, final Object... params) {
+		logger.info(String.format("executeQueryAsIdValue , Query(%s) Params(%s)", query, Arrays.toString(params)));
+		if (JKAbstractPlainDataAccess.listsCache.get(query) == null) {
 			Connection con = null;
 			ResultSet rs = null;
 			PreparedStatement ps = null;
 			try {
 				con = getConnection(true);
-				ps = prepareStatement(con, sql, params);
+				ps = prepareStatement(con, query, params);
 				rs = ps.executeQuery();
 				final Vector<JKDbIdValue> results = new Vector<JKDbIdValue>();
 				final ResultSetMetaData metaData = rs.getMetaData();
@@ -244,16 +149,16 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 
 					if (metaData.getColumnCount() >= 2) {
 						if (rs.getString(2) == null) {
-							this.logger.fine(sql.concat(" generating null values"));
+							this.logger.fine(query.concat(" generating null values"));
 						} else {
 							combo.setValue(rs.getString(2));
 						}
 					} else {
-						this.logger.fine(sql.concat(" generating single column only"));
+						this.logger.fine(query.concat(" generating single column only"));
 					}
 					results.add(combo);
 				}
-				JKAbstractPlainDataAccess.listsCache.put(sql, results);
+				JKAbstractPlainDataAccess.listsCache.put(query, results);
 			} catch (final JKDataAccessException e) {
 				throw e;
 			} catch (final SQLException e) {
@@ -262,34 +167,19 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 				close(rs, ps, con);
 			}
 		}
-		return (List<JKDbIdValue>) JKAbstractPlainDataAccess.listsCache.get(sql);
+		return (List<JKDbIdValue>) JKAbstractPlainDataAccess.listsCache.get(query);
 	}
 
-	/**
-	 * Execute query as string.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the string
-	 */
-	public String executeQueryAsString(final String query) {
-		return executeQueryAsString(query, ",", System.getProperty("line.separator"));
+	@Override
+	public String executeQueryAsString(final String query, Object... params) {
+		return executeQueryAsString(query, ",", System.getProperty("line.separator"), params);
 	}
 
-	/**
-	 * Execute query as string.
-	 *
-	 * @param query
-	 *            the query
-	 * @param fieldSeparator
-	 *            the field separator
-	 * @param recordsSepartor
-	 *            the records separtor
-	 * @return the string
-	 */
-	public String executeQueryAsString(final String query, final String fieldSeparator, final String recordsSepartor) {
+	@Override
+	public String executeQueryAsString(final String query, final String fieldSeparator, final String recordsSepartor, Object... params) {
+		logger.info(String.format("executeQueryAsString , Query(%s) Params(%s)", query, Arrays.toString(params)));
 		try {
-			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
+			final CachedRowSet rs = executeQueryAsCachedRowSet(query, params);
 			final ResultSetMetaData meta = rs.getMetaData();
 			final StringBuffer buf = new StringBuffer();
 			while (rs.next()) {
@@ -307,27 +197,16 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Execute update.
-	 *
-	 * @param updater
-	 *            the updater
-	 * @return the int
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
 	public int executeUpdate(final JKUpdater updater) throws JKDataAccessException {
+		logger.info(String.format("executeUpdater, Query(%s)", updater.getQuery()));
 		Connection connection = null;
 		PreparedStatement ps = null;
 		try {
-			this.logger.info("get connection");
 			connection = getConnection();
 			ps = connection.prepareStatement(updater.getQuery(), Statement.RETURN_GENERATED_KEYS);
 			updater.setParamters(ps);
-			this.logger.info("Exectuing statment : ".concat(ps.toString()));
 			final int count = ps.executeUpdate();
-			this.logger.info("executed succ...");
 			if (count == 0) {
 				throw new JKRecordNotFoundException("RECORD_NOT_FOUND");
 			}
@@ -341,18 +220,14 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 	}
 
 	/**
-	 * Execute update.
-	 *
+	 * 
 	 * @param updater
-	 *            the updater
 	 * @param ignoreRecordNotFoundException
-	 *            the ignore record not found exception
-	 * @return the int
+	 * @return
 	 * @throws JKDataAccessException
-	 *             the JK dao exception
 	 */
-	public int executeUpdate(final JKUpdater updater, final boolean ignoreRecordNotFoundException)
-			throws JKDataAccessException {
+	@Override
+	public int executeUpdate(final JKUpdater updater, final boolean ignoreRecordNotFoundException) {
 		try {
 			return executeUpdate(updater);
 		} catch (final JKRecordNotFoundException e) {
@@ -363,27 +238,15 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Execute update.
-	 *
-	 * @param sql
-	 *            the sql
-	 * @param params
-	 *            the params
-	 * @return the int
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public int executeUpdate(final String sql, final Object... params) throws JKDataAccessException {
+	public int execute(final String query, final Object... params) throws JKDataAccessException {
+		logger.info(String.format("executeUpdat, Query(%s) , Params (%s)", query, Arrays.toString(params)));
 		Connection connection = null;
 		PreparedStatement ps = null;
 		try {
 			connection = getConnection();
-			ps = prepareStatement(connection, sql, params);
-			this.logger.info("exceuting sql : ".concat(sql));
+			ps = prepareStatement(connection, query, params);
 			final int count = ps.executeUpdate();
-			this.logger.info("affected rows : " + count);
 			// no auto increment fields
 			return count;
 		} catch (final SQLException e) {
@@ -394,21 +257,13 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Exeute query as array.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the object[]
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public Object[] exeuteQueryAsArray(final String query) throws JKDataAccessException {
+	public Object[] executeQueryAsArray(final String query, Object... params) {
+		logger.info(String.format("executeQueryAsArray, Query(%s) , Params (%s)", query, Arrays.toString(params)));
 		try {
-			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
+			final CachedRowSet rs = executeQueryAsCachedRowSet(query, params);
 			final ResultSetMetaData meta = rs.getMetaData();
-			final ArrayList<Object[]> rows = new ArrayList<Object[]>();
+			final List<Object[]> rows = new Vector<>();
 			while (rs.next()) {
 				final Object[] row = new Object[meta.getColumnCount()];
 				for (int i = 0; i < meta.getColumnCount(); i++) {
@@ -422,14 +277,9 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jk.db.dataaccess.JKDataAccessObject#exeuteQueryAsList(java.lang.
-	 * String, java.lang.Object[])
-	 */
 	@Override
-	public List exeuteQueryAsList(final String query, final Object... params) throws JKDataAccessException {
+	public List<List<Object>> executeQueryAsList(final String query, final Object... params) {
+		logger.info(String.format("executeQueryAsList, Query(%s) , Params (%s)", query, Arrays.toString(params)));
 		try {
 			final CachedRowSet rs = executeQueryAsCachedRowSet(query);
 			final ResultSetMetaData meta = rs.getMetaData();
@@ -447,15 +297,9 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.jk.db.dataaccess.JKDataAccessObject#exeuteSingleOutputQuery(java.lang
-	 * .String, java.lang.Object[])
-	 */
 	@Override
-	public Object exeuteSingleOutputQuery(final String query, final Object... params) throws JKDataAccessException {
+	public Object exeuteSingleOutputQuery(final String query, final Object... params) {
+		logger.info(String.format("executeQueryAsSingleOutput, Query(%s) , Params (%s)", query, Arrays.toString(params)));
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -474,19 +318,9 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Find record.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @return the object
-	 * @throws JKRecordNotFoundException
-	 *             the JK record not found exception
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public Object findRecord(final JKFinder finder) {
+	public <T> T findRecord(final JKFinder finder) {
+		logger.info(String.format("findRecord, Query(%s)", finder.getQuery()));
 		Connection connection = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -500,78 +334,42 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 			}
 			throw new JKRecordNotFoundException("REOCRD_NOT_FOUND");
 		} catch (final SQLException e) {
-			throw new JKDataAccessException(
-					"Error while executing the following select statement : \n".concat(finder.getQuery()), e);
+			throw new JKDataAccessException("Error while executing the following select statement : \n".concat(finder.getQuery()), e);
 		} finally {
 			close(rs, ps, connection);
 		}
 	}
 
-	/**
-	 * Find record.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @param tableName
-	 *            the table name
-	 * @param recordId
-	 *            the record id
-	 * @return the object
-	 * @throws JKRecordNotFoundException
-	 *             the JK record not found exception
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	public Object findRecord(final JKFinder finder, final String tableName, final Object recordId)
-			throws JKRecordNotFoundException, JKDataAccessException {
+	@Override
+	public <T> T findRecord(final JKFinder finder, final String tableName, final Object recordId) {
 		if (JKAbstractPlainDataAccess.objectsCache.get(tableName) == null) {
 			JKAbstractPlainDataAccess.objectsCache.put(tableName, new Hashtable<Object, Object>());
 		}
 		try {
 			final Hashtable<Object, Object> tableCache = JKAbstractPlainDataAccess.objectsCache.get(tableName);
 			if (tableCache.get(recordId) == null) {
-				// System.out.println("loading record "+tableName);
-				final Object record = findRecord(finder);
+				final T record = findRecord(finder);
 				// if the size exceeded the max cache size , don't cache
-				if (tableCache.size() > Integer.parseInt(getDataSource().getProperty("max-cache-size", "1000"))) {
+				if (tableCache.size() > Integer
+						.parseInt(getDataSource().getProperty(JKDbConstants.DB_MAX_CACHE_SIZE, JKDbConstants.DB_MAX_CACHE_SIZE_DEFAULT))) {
 					return record;
 				}
 				tableCache.put(recordId, record);
 			} else {
 				// System.out.println("return "+tableName+" info from cache");
 			}
-			return tableCache.get(recordId);
+			return (T) tableCache.get(recordId);
 		} catch (final JKRecordNotFoundException e) {
-			throw new JKRecordNotFoundException(
-					"RECORD_NOT_FOUND_FOR_TABLE (".concat(tableName).concat(") for ID (" + recordId + ")"));
+			throw new JKRecordNotFoundException("RECORD_NOT_FOUND_FOR_TABLE (".concat(tableName).concat(") for ID (" + recordId + ")"));
 		}
 	}
 
-	/**
-	 * Gets the connection.
-	 *
-	 * @return the connection
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	protected Connection getConnection() {
 		return getConnection(false);
 	}
 
-	/**
-	 * Gets the connection.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the connection
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	protected Connection getConnection(final boolean query) {
 		this.logger.info("get connection with query flag : " + query);
-//		if (this.session != null && !this.session.isClosed()) {
-//			return this.session.getConnection();
-//		}
 		if (query) {
 			return getDataSource().getQueryConnection();
 		} else {
@@ -579,31 +377,11 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Gets the data source.
-	 *
-	 * @return the data source
-	 */
 	protected JKDataSource getDataSource() {
-//		if (this.dataSource != null) {
-//			return this.dataSource;
-//		}
-		return JKDataSourceFactory.getDefaultDataSource();
+		return JKDataSourceFactory.getDataSource();
 	}
 
-	/**
-	 * Gets the generated keys.
-	 *
-	 * @param ps
-	 *            the ps
-	 * @return the generated keys
-	 * @throws SQLException
-	 *             the SQL exception
-	 */
 	protected int getGeneratedKeys(final PreparedStatement ps) throws SQLException {
-//		if (JKDataSourceUtil.isOracle(getDataSource())) {
-//			throw new IllegalStateException("This method is not avilable on oracle db");
-//		}
 		final ResultSet idRs = ps.getGeneratedKeys();
 		if (idRs.next()) {
 			final Object object = idRs.getObject(1);
@@ -612,59 +390,29 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		return 0;
 	}
 
-	/**
-	 * Gets the next id.
-	 *
-	 * @param connectoin
-	 *            the connectoin
-	 * @param tableName
-	 *            the table name
-	 * @param fieldName
-	 *            the field name
-	 * @return the next id
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	public int getNextId(final Connection connectoin, final String tableName, final String fieldName)
-			throws JKDataAccessException {
+	protected Long getNextId(final Connection connectoin, final String tableName, final String fieldName) throws JKDataAccessException {
 		return getNextId(connectoin, tableName, fieldName, null);
 	}
 
-	/**
-	 * Gets the next id.
-	 *
-	 * @param con
-	 *            the con
-	 * @param tableName
-	 *            the table name
-	 * @param fieldName
-	 *            the field name
-	 * @param condition
-	 *            the condition
-	 * @return the next id
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	public int getNextId(final Connection con, final String tableName, final String fieldName, final String condition) {
+	protected Long getNextId(final Connection con, final String tableName, final String fieldName, final String condition) {
 		PreparedStatement ps = null;
-		int ser;
 		try {
 			String sql = "SELECT MAX(".concat(fieldName.concat(")+1 FROM ".concat(tableName)));
 			if (condition != null && !condition.trim().equals("")) {
 				sql += " WHERE " + condition;
 			}
 			ps = prepareStatement(con, sql);
-
+			Long id = 1l;
 			final ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				ser = rs.getInt(1);
+				id = rs.getLong(1);
 				if (rs.wasNull()) {
-					return 1;
+					id = 1l;
 				}
 			} else {
-				ser = 1;
+				id = 1l;
 			}
-			return ser;
+			return id;
 		} catch (final SQLException e) {
 			throw new JKDataAccessException(e);
 		} finally {
@@ -672,19 +420,8 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Gets the next id.
-	 *
-	 * @param tableName
-	 *            the table name
-	 * @param fieldName
-	 *            the field name
-	 * @return the next id
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public int getNextId(final String tableName, final String fieldName) throws JKDataAccessException {
+	public Long getNextId(final String tableName, final String fieldName) {
 		final Connection connection = getConnection(true);
 		try {
 			return getNextId(connection, tableName, fieldName);
@@ -706,7 +443,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	public int getNextId(final String tableName, final String fieldName, final String condition) throws JKDataAccessException {
+	public Long getNextId(final String tableName, final String fieldName, final String condition) {
 		final Connection connection = getConnection(true);
 		try {
 			return getNextId(connection, tableName, fieldName, condition);
@@ -715,43 +452,28 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see com.jk.db.JKDataAccessObject#getRowsCount(java.lang.String)
-	 */
 	@Override
-	public int getRowsCount(final String query) throws NumberFormatException, JKDataAccessException {
+	public int getRowsCount(final String query) {
+		logger.info(String.format("getRowsCount, Query(%s) ", query));
 		final String sql = "SELECT COUNT(*) FROM (" + query + ") ";
-		// System.out.println(sql);
 		return new Integer(exeuteSingleOutputQuery(sql).toString());
 	}
 
-	/**
-	 * Gets the system date.
-	 *
-	 * @return the system date
-	 * @throws JKRecordNotFoundException
-	 *             the JK record not found exception
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	public Date getSystemDate() throws JKRecordNotFoundException, JKDataAccessException {
-		return (Date) exeuteSingleOutputQuery("SELECT SYSDATE()");
+	@Override
+	public Date getSystemDate() {
+		logger.info(String.format("getSystemDate())"));
+		switch (getDataSource().getDatabaseType()) {
+		case MYSQL:
+			return (Date) exeuteSingleOutputQuery("SELECT SYSDATE()");
+		case ORACLE:
+			return (Date) exeuteSingleOutputQuery("SELECT SYSTIMESTAMP FROM DUAL");
+		}
+		throw new IllegalStateException("not implemented for database : ".concat(getDataSource().getDatabaseType().toString()));
 	}
 
-	/**
-	 * Lst records.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @return the list
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
 	@Override
-	public List lstRecords(final JKFinder finder) throws JKDataAccessException {
-		// System.out.println("Executing : "+finder.getFinderSql());
+	public <T> List<T> getList(final JKFinder finder) {
+		logger.info(String.format("executeUpdat, Query(%s) ", finder.getQuery()));
 		Connection connection = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -761,9 +483,10 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 			finder.setParamters(ps);
 			rs = ps.executeQuery();
 			this.logger.fine(ps.toString().substring(ps.toString().toUpperCase().indexOf("SELECT")));
-			final List list = new ArrayList();
+			final List<T> list = new Vector<>();
 			while (rs.next()) {
-				list.add(finder.populate(rs));
+				T populate = finder.populate(rs);
+				list.add(populate);
 			}
 			return list;
 		} catch (final SQLException e) {
@@ -776,39 +499,23 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		}
 	}
 
-	/**
-	 * Lst records.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @param key
-	 *            the key
-	 * @return the list
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	public List lstRecords(final JKFinder finder, final String key) throws JKDataAccessException {
+	@Override
+	public <T> List<T> getList(final JKFinder finder, final String key) {
 		if (JKAbstractPlainDataAccess.listsCache.get(key) == null) {
-			JKAbstractPlainDataAccess.listsCache.put(key, lstRecords(finder));
+			JKAbstractPlainDataAccess.listsCache.put(key, getList(finder));
 		}
-		return JKAbstractPlainDataAccess.listsCache.get(key);
+		return (List<T>) JKAbstractPlainDataAccess.listsCache.get(key);
 	}
 
 	/**
-	 * Prepare statement.
-	 *
+	 * 
 	 * @param connection
-	 *            the connection
 	 * @param sql
-	 *            the sql
 	 * @param params
-	 *            the params
-	 * @return the prepared statement
+	 * @return
 	 * @throws SQLException
-	 *             the SQL exception
 	 */
-	protected PreparedStatement prepareStatement(final Connection connection, final String sql, final Object... params)
-			throws SQLException {
+	protected PreparedStatement prepareStatement(final Connection connection, final String sql, final Object... params) throws SQLException {
 		final PreparedStatement prepareStatement = connection.prepareStatement(sql);
 		for (int i = 0; i < params.length; i++) {
 			prepareStatement.setObject(i + 1, params[i]);
@@ -816,73 +523,66 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		return prepareStatement;
 	}
 
-	/**
-	 * Prints the record result set.
-	 *
-	 * @param rs
-	 *            the rs
-	 */
-	/*
-	 *
-	 */
 	protected void printRecordResultSet(final ResultSet rs) {
-		printRecordResultSet(rs, true);
+		printRecordResultSet(rs, true, System.out);
 	}
 
-	/**
-	 * Prints the record result set.
-	 *
-	 * @param rs
-	 *            the rs
-	 * @param all
-	 *            the all
-	 */
-	protected void printRecordResultSet(final ResultSet rs, final boolean all) {
+	protected void printRecordResultSet(final ResultSet rs, final boolean all, PrintStream out) {
 		try {
 			final java.sql.ResultSetMetaData meta = rs.getMetaData();
-			System.out.println("At print result set");
+			out.println("At print result set");
 			while (rs.next()) {
-				System.out.println("------------------------------------------------------");
+				out.println("------------------------------------------------------");
 				for (int i = 0; i < meta.getColumnCount(); i++) {
-					System.out.print(meta.getColumnName(i + 1) + " = " + rs.getObject(i + 1) + "\t");
+					out.print(meta.getColumnName(i + 1) + " = " + rs.getObject(i + 1) + "\t");
 				}
-				System.out.println();
+				out.println();
 				if (!all) {
 					return;
 				}
 			}
-			System.out.println("///////////////////////");
+			out.println("///////////////////////");
 		} catch (final SQLException e) {
 			throw new JKDataAccessException(e);
 		}
 
 	}
 
-//	/**
-//	 * Sets the session.
-//	 *
-//	 * @param session
-//	 *            the new session
-//	 */
-//	public void setSession(final JKSession session) {
-//		this.session = session;
-//	}
-
-	/**
-	 * Removes the list cache.
-	 *
-	 * @param query
-	 *            the query
-	 */
 	public static void removeListCache(final String query) {
 		JKAbstractPlainDataAccess.listsCache.remove(query);
 	}
 
-	/**
-	 * Reset cache.
-	 */
 	public synchronized static void resetCache() {
-		JKAbstractPlainDataAccess.objectsCache.clear();
-		JKAbstractPlainDataAccess.listsCache.clear();
+		JKDataSourceFactory.getDataSource().resetCache();
+	}
+
+	@Override
+	public <T> List<T> executeQueryAsObjectList(Class<T> clas, String instanceProperyNames, String query, Object... params) {
+		logger.info(String.format("executeQueryAsObjectList, Class(%s), Properties(%s), Query(%s) , Params (%s)", clas.getSimpleName(),
+				instanceProperyNames, query, Arrays.toString(params)));
+		String[] properties = instanceProperyNames.split(",");
+		List<T> results = new Vector<>();
+		Object[] rows = executeQueryAsArray(query, params);
+		for (Object rowObject : rows) {
+			Object[] row = (Object[]) rowObject;
+			T instance = ObjectUtil.newInstance(clas);
+			for (int i = 0; i < row.length; i++) {
+				ObjectUtil.setPeopertyValue(instance, properties[i], row[i]);
+			}
+			results.add(instance);
+		}
+		return results;
+	}
+
+	@Override
+	public <T> T executeQueryAsSingleObject(Class<T> clas, String instanceProperyNames, String query, Object... params) {
+		List<T> list = executeQueryAsObjectList(clas, instanceProperyNames, query, params);
+		if (list.size() == 0) {
+			return null;
+		}
+		if (list.size() > 1) {
+			throw new JKDataAccessException("results contains more than one row");
+		}
+		return list.get(0);
 	}
 }

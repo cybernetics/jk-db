@@ -15,19 +15,22 @@
  */
 package com.jk.db.dataaccess.plain;
 
+import java.sql.Connection;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.rowset.CachedRowSet;
 
 import com.jk.db.dataaccess.JKDataAccess;
 import com.jk.db.dataaccess.exception.JKDataAccessException;
+import com.jk.db.example.Employee;
 
 /**
  * The Interface JKDataAccessObject.
  *
  * @author Jalal Kiswani
  */
-public interface JKPlainDataAccess extends JKDataAccess{
+public interface JKPlainDataAccess extends JKDataAccess {
 
 	/**
 	 * Execute query.
@@ -40,7 +43,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	CachedRowSet executeQueryAsCachedRowSet(String query, Object... params) throws JKDataAccessException;
+	CachedRowSet executeQueryAsCachedRowSet(String query, Object... params);
 
 	/**
 	 * Creates the records from sql.
@@ -53,7 +56,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params) throws JKDataAccessException;
+	List<JKDbIdValue> executeQueryAsIdValue(String sql, Object... params);
 
 	/**
 	 * Execute update.
@@ -64,7 +67,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int executeUpdate(JKUpdater updater) throws JKDataAccessException;
+	int executeUpdate(JKUpdater updater);
 
 	/**
 	 * Execute update.
@@ -77,31 +80,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int executeUpdate(String sql, Object... params) throws JKDataAccessException;
-
-	/**
-	 * Exeute query as array.
-	 *
-	 * @param query
-	 *            the query
-	 * @return the object[]
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	Object[] exeuteQueryAsArray(String query) throws JKDataAccessException;
-
-	/**
-	 * Exeute query as list.
-	 *
-	 * @param query
-	 *            the query
-	 * @param params
-	 *            the params
-	 * @return the list
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	List exeuteQueryAsList(String query, Object... params) throws JKDataAccessException;
+	int execute(String sql, Object... params);
 
 	/**
 	 * Exeute single output query.
@@ -114,16 +93,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	Object exeuteSingleOutputQuery(String query, Object... params) throws JKDataAccessException;
-
-	/**
-	 * Find record.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @return the object
-	 */
-	Object findRecord(JKFinder finder);
+	Object exeuteSingleOutputQuery(String query, Object... params);
 
 	/**
 	 * Gets the next id.
@@ -136,7 +106,7 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int getNextId(String tableName, String fieldName) throws JKDataAccessException;
+	Long getNextId(String tableName, String fieldName);
 
 	/**
 	 * Gets the rows count.
@@ -149,17 +119,31 @@ public interface JKPlainDataAccess extends JKDataAccess{
 	 * @throws JKDataAccessException
 	 *             the JK dao exception
 	 */
-	int getRowsCount(String query) throws NumberFormatException, JKDataAccessException;
+	int getRowsCount(String query);
 
-	/**
-	 * Lst records.
-	 *
-	 * @param finder
-	 *            the finder
-	 * @return the list
-	 * @throws JKDataAccessException
-	 *             the JK dao exception
-	 */
-	List lstRecords(JKFinder finder) throws JKDataAccessException;
+	String executeQueryAsString(String query, Object... params);
+
+	String executeQueryAsString(String query, String fieldSeparator, String recordsSepartor, Object... params);
+
+	int executeUpdate(JKUpdater updater, boolean ignoreRecordNotFoundException);
+
+	List<List<Object>> executeQueryAsList(String query, Object... params);
+
+	public <T> T findRecord(final JKFinder finder, final String tableName, final Object recordId);
+
+	<T> T findRecord(JKFinder finder);
+
+	Date getSystemDate();
+
+	<T> List<T> getList(JKFinder finder);
+
+	<T> List<T> getList(JKFinder finder, String key);
+
+	Object[] executeQueryAsArray(String query, Object... params);
+
+	<T> List<T> executeQueryAsObjectList(Class<T> clas,String instanceProperyNames, String query, Object... params);
+
+	<T> T executeQueryAsSingleObject(Class<T> class1, String instanceProperyNames,String query, Object... params);
+
 
 }

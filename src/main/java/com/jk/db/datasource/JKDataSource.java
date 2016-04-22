@@ -159,4 +159,8 @@ public interface JKDataSource {
 	public EntityManager createEntityManager();
 
 	public void close(EntityManager em, boolean commit);
+	
+	public JKDatabaseType getDatabaseType();
+
+	public void resetCache();
 }

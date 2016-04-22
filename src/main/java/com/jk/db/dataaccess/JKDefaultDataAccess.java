@@ -29,8 +29,8 @@ import com.jk.db.datasource.JKSession;
  *
  * @author Jalal Kiswani
  */
-public class JKDefaultDataAccess extends JKAbstractPlainDataAccess implements JKOrmDataAccess{
-	JKJpaDataAccess jpaDataAccess=new JKJpaDataAccess();
+public class JKDefaultDataAccess extends JKAbstractPlainDataAccess{
+//	JKJpaDataAccess jpaDataAccess=new JKJpaDataAccess();
 	
 //	/**
 //	 * Instantiates a new JK default dao.
@@ -60,40 +60,6 @@ public class JKDefaultDataAccess extends JKAbstractPlainDataAccess implements JK
 //		super(session);
 //	}
 
-	@Override
-	public void insert(Object object) {
-		jpaDataAccess.insert(object);
-	}
-
-	@Override
-	public void update(Object object) {
-		jpaDataAccess.update(object);
-	}
-
-	@Override
-	public void delete(Object object) {
-		jpaDataAccess.delete(object);
-	}
-
-	@Override
-	public void delete(Object id, Class<?> type) {
-		jpaDataAccess.delete(id,type);
-	}
-
-	@Override
-	public <T> T find(Class<T> clas, Object id) {
-		return jpaDataAccess.find(clas, id);
-	}
-
-	@Override
-	public <T> List<T> getList(Class<T> clas) {
-		return jpaDataAccess.getList(clas);
-	}
-
-	@Override
-	public <T> List<T> getList(Class<T> clas, Map<String, Object> paramters) {
-		return jpaDataAccess.getList(clas, paramters);
-	}
 
 
 }
