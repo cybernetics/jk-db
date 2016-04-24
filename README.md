@@ -30,6 +30,8 @@ Light Java database API (Plain JDBC and JPA) for simplifying database driven dev
           <target>1.7</target>
         </configuration>
       </plugin>   	    
+###Important for eclipse users: 
+After you add the above section for Java version , it is important it refresh maven projects by `right click on the project-->Maven-->Update Project`
 	
 4- Create configurations named `jk-db.properties` in project working directory, with the following contents:
 	
