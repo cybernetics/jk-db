@@ -69,9 +69,18 @@ To be able to run the examples , create table in the database with the below str
 
 ### Dumping table contents as string
 	
-		JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
-		String rows = dataAccess.executeQueryAsString("SELECT * FROM employees");
-		System.out.println(rows);
+	package com.jk.example.jkdb;
+	
+	import com.jk.db.dataaccess.plain.JKPlainDataAccess;
+	import com.jk.db.datasource.JKDataSourceFactory;
+	
+	public class JKDbTest {
+		public static void main(String[] args) {
+			JKPlainDataAccess dataAccess = JKDataSourceFactory.getPlainDataAccess();
+		    String rows = dataAccess.executeQueryAsString("SELECT * FROM employees");
+		    System.out.println(rows);
+		}
+	}
 		
 ### Execute data manipulation statement (insert,update or delete)
 
