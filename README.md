@@ -10,30 +10,37 @@ Light Java database API (Plain JDBC and JPA) for simplifying database driven dev
 6. straight forward API
 
 ## Usage : 
-1- Create new maven project.  
+1- Create new maven (`war` or `jar`)project.  
 2- Add JK-DB dependency to your `pom.xml` inside the dependencies sections 
 
+	<dependencies>
 		<dependency>
 			<groupId>com.jalalkiswani</groupId>
 			<artifactId>jk-db</artifactId>
-			<version>0.0.4</version>
+			<version>0.0.5</version>
 		</dependency>
-    
+	</dependencies>
 3- Be sure to set the minimum JDK level in your pom file to 1.7 by adding the following sections inside `build-->plugins` section :
 
-	<plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>   	    
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<!-- http://maven.apache.org/plugins/maven-compiler-plugin/ -->
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build> 	    
 ###Important for eclipse users: 
 After you add the above section for Java version , it is important it refresh maven projects by `right click on the project-->Maven-->Update Project`
 	
-4- Create configurations named `jk-db.properties` in project working directory, with the following contents:
+4- Create configurations named `jk-db.properties` in project working directory just beside the `pom.xml` file in case if maven `jar` project, and inside `WEB-INF` folder in case of maven `war` project, with the following contents:
 	
 	db-driver-name=com.mysql.jdbc.Driver
 	db-url=jdbc:mysql://localhost:3306/app
