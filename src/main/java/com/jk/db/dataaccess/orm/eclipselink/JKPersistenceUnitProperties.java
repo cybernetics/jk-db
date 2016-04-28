@@ -15,18 +15,6 @@
  */
 package com.jk.db.dataaccess.orm.eclipselink;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
-
 /**
  * Credit to eclipselink.PersistenceUnitProperties
  * @author Jalal Kiswani

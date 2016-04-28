@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.jalalkiswani</groupId>
 		<artifactId>jk-os-parent</artifactId>
-		<version>0.0.5</version>
+		<version>0.0.6-SNAPHOT</version>
 	</parent>
 	<artifactId>jk-db</artifactId>
 	<name>JK-DB</name>
@@ -14,7 +14,6 @@
 		<developerConnection>Jalal Kiswani</developerConnection>
 		<connection>scm:git:git@github.com:kiswanij/jk-db</connection>
 	</scm>
-
 
 	<dependencies>
 		<dependency>
@@ -40,6 +39,13 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>5.1.0.Final</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+
 
 	</dependencies>
 
