@@ -146,4 +146,5 @@ public class JKPersistenceUnitInfoImpl implements PersistenceUnitInfo {
 	public ClassLoader getNewTempClassLoader() {
 		return null;
 	}
+	
 }

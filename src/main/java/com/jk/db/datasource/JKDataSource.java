@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import com.jk.db.dataaccess.exception.JKDataAccessException;
 
@@ -163,4 +164,6 @@ public interface JKDataSource {
 	public JKDatabaseType getDatabaseType();
 
 	public void resetCache();
+
+	public PersistenceUnitInfo getPersisitnceUnitInfo(String persisitnceUnitName, Properties prop, String entitiesPackages);
 }
