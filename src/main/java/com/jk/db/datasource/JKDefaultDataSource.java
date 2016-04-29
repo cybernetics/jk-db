@@ -141,7 +141,7 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 		this.dbUrl = this.config.getProperty(JKDbConstants.PROPERTY_DB_URL, JKDbConstants.DEFAULT_DB_URL);
 		this.userName = this.config.getProperty(JKDbConstants.PROPERTY_DB_USER, JKDbConstants.DEFAULT_DB_USER);
 		this.password = this.config.getProperty(JKDbConstants.PROPERTY_DB_PASSWORD, JKDbConstants.DEFAULT_DB_PASSWORD);
-		this.entitiesPackages= this.config.getProperty(JKDbConstants.PROPERTY_DB_ENTITY_PACKAGES, JKDbConstants.DEFAULT_DB_ENTITY_PACKAGES);
+		this.entitiesPackages = this.config.getProperty(JKDbConstants.PROPERTY_DB_ENTITY_PACKAGES, JKDbConstants.DEFAULT_DB_ENTITY_PACKAGES);
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 		prop.setProperty(JKPersistenceUnitProperties.JDBC_URL, getDatabaseUrl());
 		prop.setProperty(JKPersistenceUnitProperties.JDBC_USER, getUsername());
 
-		return JKEntityManagerFactory.createEntityManagerFactory(name, prop,getEntitiesPackages());
+		return JKEntityManagerFactory.createEntityManagerFactory(name, prop, getEntitiesPackages());
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 	@Override
 	public void close(EntityManager em, boolean commit) {
 		if (em != null) {
-			if (commit) {
+			if (commit && !em.getTransaction().getRollbackOnly()) {
 				em.getTransaction().commit();
 			} else {
 				em.getTransaction().rollback();
