@@ -16,15 +16,22 @@
 package com.jk.db.datasource;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.hibernate.jpa.internal.EntityManagerFactoryImpl;
 
+import com.jk.annotations.AnnotationDetector;
+import com.jk.cache.JKCacheFactory;
+import com.jk.cache.JKCacheManager;
 import com.jk.db.dataaccess.orm.eclipselink.JKPersistenceUnitProperties;
 import com.jk.db.dataaccess.orm.hibernate.JKEntityManagerFactory;
+import com.jk.db.dataaccess.orm.hibernate.JKPersistenceUnitInfoImpl;
 import com.jk.db.dataaccess.plain.JKDbConstants;
 
 /**
@@ -141,7 +148,7 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 		this.dbUrl = this.config.getProperty(JKDbConstants.PROPERTY_DB_URL, JKDbConstants.DEFAULT_DB_URL);
 		this.userName = this.config.getProperty(JKDbConstants.PROPERTY_DB_USER, JKDbConstants.DEFAULT_DB_USER);
 		this.password = this.config.getProperty(JKDbConstants.PROPERTY_DB_PASSWORD, JKDbConstants.DEFAULT_DB_PASSWORD);
-		this.entitiesPackages= this.config.getProperty(JKDbConstants.PROPERTY_DB_ENTITY_PACKAGES, JKDbConstants.DEFAULT_DB_ENTITY_PACKAGES);
+		this.entitiesPackages = this.config.getProperty(JKDbConstants.PROPERTY_DB_ENTITY_PACKAGES, JKDbConstants.DEFAULT_DB_ENTITY_PACKAGES);
 	}
 
 	@Override
@@ -151,14 +158,33 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 
 	@Override
 	public EntityManagerFactory getEntityManagerFactory(String name) {
+		EntityManagerFactory emf = getCache().get(name, EntityManagerFactory.class);
+		if (emf == null) {
+			Properties prop = new Properties();
+			prop.setProperty(JKPersistenceUnitProperties.JDBC_DRIVER, getDriverName());
+			prop.setProperty(JKPersistenceUnitProperties.JDBC_PASSWORD, getPassword());
+			prop.setProperty(JKPersistenceUnitProperties.JDBC_URL, getDatabaseUrl());
+			prop.setProperty(JKPersistenceUnitProperties.JDBC_USER, getUsername());
+			PersistenceUnitInfo persisitnceUnitInfo = getPersisitnceUnitInfo(name, prop, getEntitiesPackages());
+			emf = JKEntityManagerFactory.createEntityManagerFactory(persisitnceUnitInfo);
+			getCache().cache(name, emf);
+		}
+		return emf;
+	}
 
-		Properties prop = new Properties();
-		prop.setProperty(JKPersistenceUnitProperties.JDBC_DRIVER, getDriverName());
-		prop.setProperty(JKPersistenceUnitProperties.JDBC_PASSWORD, getPassword());
-		prop.setProperty(JKPersistenceUnitProperties.JDBC_URL, getDatabaseUrl());
-		prop.setProperty(JKPersistenceUnitProperties.JDBC_USER, getUsername());
+	protected JKCacheManager getCache() {
+		return JKCacheFactory.getCacheManager();
+	}
 
-		return JKEntityManagerFactory.createEntityManagerFactory(name, prop,getEntitiesPackages());
+	@Override
+	public PersistenceUnitInfo getPersisitnceUnitInfo(String persisitnceUnitName, Properties prop, String entitiesPackages) {
+		PersistenceUnitInfo info = getCache().get(persisitnceUnitName, PersistenceUnitInfo.class);
+		if (info == null) {
+			List<String> entityClassNames = AnnotationDetector.scanAsList(Entity.class, entitiesPackages.split(","));
+			info = new JKPersistenceUnitInfoImpl(persisitnceUnitName, entityClassNames, prop);
+			getCache().cache(persisitnceUnitName, info);
+		}
+		return info;
 	}
 
 	@Override
@@ -178,7 +204,7 @@ public class JKDefaultDataSource extends JKAbstractDataSource {
 	@Override
 	public void close(EntityManager em, boolean commit) {
 		if (em != null) {
-			if (commit) {
+			if (commit && !em.getTransaction().getRollbackOnly()) {
 				em.getTransaction().commit();
 			} else {
 				em.getTransaction().rollback();

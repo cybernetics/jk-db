@@ -117,7 +117,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		ResultSet rs = null;
 		try {
 			con = getConnection();
-			ps = prepareStatement(con, query, params);
+			ps = prepareQueryStatement(con, query, params);
 			rs = ps.executeQuery();
 			final CachedRowSet impl = new CachedRowSetImpl();
 			impl.populate(rs);
@@ -139,7 +139,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 			PreparedStatement ps = null;
 			try {
 				con = getConnection(true);
-				ps = prepareStatement(con, query, params);
+				ps = prepareQueryStatement(con, query, params);
 				rs = ps.executeQuery();
 				final Vector<JKDbIdValue> results = new Vector<JKDbIdValue>();
 				final ResultSetMetaData metaData = rs.getMetaData();
@@ -305,7 +305,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		ResultSet rs = null;
 		try {
 			con = getConnection(true);
-			ps = prepareStatement(con, query, params);
+			ps = prepareQueryStatement(con, query, params);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				return rs.getObject(1);
@@ -326,7 +326,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		ResultSet rs = null;
 		try {
 			connection = getConnection(true);
-			ps = prepareStatement(connection, finder.getQuery());
+			ps = prepareQueryStatement(connection, finder.getQuery());
 			finder.setParamters(ps);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -401,7 +401,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 			if (condition != null && !condition.trim().equals("")) {
 				sql += " WHERE " + condition;
 			}
-			ps = prepareStatement(con, sql);
+			ps = prepareQueryStatement(con, sql);
 			Long id = 1l;
 			final ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
@@ -479,7 +479,7 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 		ResultSet rs = null;
 		try {
 			connection = getConnection(true);
-			ps = prepareStatement(connection, finder.getQuery());
+			ps = prepareQueryStatement(connection, finder.getQuery());
 			finder.setParamters(ps);
 			rs = ps.executeQuery();
 			this.logger.fine(ps.toString().substring(ps.toString().toUpperCase().indexOf("SELECT")));
@@ -515,8 +515,18 @@ public abstract class JKAbstractPlainDataAccess implements JKPlainDataAccess {
 	 * @return
 	 * @throws SQLException
 	 */
+	protected PreparedStatement prepareQueryStatement(final Connection connection, final String sql, final Object... params) throws SQLException {
+		final PreparedStatement prepareStatement = connection.prepareStatement(sql,ResultSet.FETCH_FORWARD, ResultSet.CONCUR_READ_ONLY);
+		return setParams(prepareStatement, params);
+	}
+
 	protected PreparedStatement prepareStatement(final Connection connection, final String sql, final Object... params) throws SQLException {
 		final PreparedStatement prepareStatement = connection.prepareStatement(sql);
+		return setParams(prepareStatement, params);
+	}
+
+	
+	protected PreparedStatement setParams(final PreparedStatement prepareStatement, final Object... params) throws SQLException {
 		for (int i = 0; i < params.length; i++) {
 			prepareStatement.setObject(i + 1, params[i]);
 		}

@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 import com.jk.context.JKContextFactory;
 import com.jk.db.dataaccess.JKDefaultDataAccess;
 import com.jk.db.dataaccess.exception.JKDataAccessException;
+import com.jk.db.dataaccess.orm.JKDefaultOrmDataAccess;
+import com.jk.db.dataaccess.orm.JKOrmDataAccess;
 import com.jk.db.dataaccess.plain.JKDbConstants;
 import com.jk.db.dataaccess.plain.JKPlainDataAccess;
 import com.jk.exceptions.JKException;
@@ -117,9 +119,13 @@ public class JKDataSourceFactory {
 			JKDataSourceFactory.defaultResourceManager = JKDataSourceFactory.createInstance(prop);
 		}
 	}
-	
-	public static JKPlainDataAccess getPlainDataAccess(){
+
+	public static JKPlainDataAccess getPlainDataAccess() {
 		return new JKDefaultDataAccess();
 	}
-	
+
+	public static JKOrmDataAccess getOrmDataAccess() {
+		return new JKDefaultOrmDataAccess();
+	}
+
 }

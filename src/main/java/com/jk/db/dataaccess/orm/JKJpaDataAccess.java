@@ -15,6 +15,9 @@
  */
 package com.jk.db.dataaccess.orm;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,9 +41,13 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
+import com.jk.db.dataaccess.exception.JKDataAccessManyRowsException;
+import com.jk.db.dataaccess.orm.meta.JKColumnWrapper;
+import com.jk.db.dataaccess.orm.meta.JKSortInfo;
 import com.jk.db.datasource.JKDataSourceFactory;
 
 public class JKJpaDataAccess implements JKOrmDataAccess {
+	Logger logger = Logger.getLogger(getClass().getName());
 
 	@Override
 	public void insert(Object object) {
@@ -103,28 +111,34 @@ public class JKJpaDataAccess implements JKOrmDataAccess {
 
 	@Override
 	public <T> List<T> getList(Class<T> clas) {
-		return getList(clas, Collections.EMPTY_MAP);
+		logger.fine("getList : " + clas.getName());
+		return getList(clas, null);
 	}
 
 	@Override
 	public <T> List<T> getList(Class<T> clas, Map<String, Object> paramters) {
+		logger.fine("getList : " + clas.getName() + " , with params : " + paramters);
 		EntityManager manager = getEntityManager();
 		try {
 			StringBuffer buf = new StringBuffer("SELECT c FROM ".concat(clas.getSimpleName()).concat(" c "));
 			buf.append(" WHERE 1=1 ");
-			Set<String> keySet = paramters.keySet();
-			for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
-				String paramName = (String) iterator.next();
-				buf.append(String.format(" AND c.%s=?", paramters.get(paramName)));
+			if (paramters != null) {
+				Set<String> keySet = paramters.keySet();
+				for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+					String paramName = (String) iterator.next();
+					buf.append(String.format(" AND c.%s=?", paramters.get(paramName)));
+				}
+				// TODO : check the paramters for order
+				return executeQuery(clas, buf.toString(), paramters.values());
 			}
-
-			return executeQuery(clas, buf.toString(), paramters);
+			return executeQuery(clas, buf.toString());
 		} finally {
 			close(manager, true);
 		}
 	}
 
 	public <T> List<T> executeQuery(final Class<T> clas, final String queryString, final Object... paramters) {
+		logger.fine("executeQuery for class : " + clas.getName() + " with query : " + queryString + " , params : " + Arrays.toString(paramters));
 		EntityManager em = getEntityManager();
 		try {
 			Query query = em.createQuery(queryString);
@@ -146,9 +160,43 @@ public class JKJpaDataAccess implements JKOrmDataAccess {
 		JKDataSourceFactory.getDataSource().close(manager, commit);
 	}
 
-	private EntityManager getEntityManager() {
+	protected EntityManager getEntityManager() {
 		EntityManager manager = JKDataSourceFactory.getDataSource().createEntityManager();
 		return manager;
+	}
+
+	protected String getQueryOrder(final Class<? extends JKEntity> clas)
+			throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Method method = clas.getMethod("getSortInfo", Class.class);
+		JKSortInfo info = (JKSortInfo) method.invoke(null, clas);
+		StringBuffer buf2 = new StringBuffer();
+		if (info != null) {
+			buf2.append("ORDER BY ");
+			JKColumnWrapper col = (JKColumnWrapper) info.column();
+			buf2.append("c." + col.getFieldName());
+			buf2.append(" " + info.sortOrder().toString());
+		}
+		return buf2.toString();
+	}
+
+	public <T> T findSingleEntity(Class<T> clas, final String queryString, final Object... paramters) {
+		List<T> list = executeQuery(clas, queryString, paramters);
+		if (list.size() == 0) {
+			return null;
+		}
+		if (list.size() == 1) {
+			return list.get(0);
+		}
+		throw new JKDataAccessManyRowsException(queryString, paramters);
+	}
+
+	// ///////////////////////////////////////////////////////////////////////////////////////
+	public <T extends JKEntity> T getFirstRecord(Class<T> clas) {
+		List<T> all = getList(clas);
+		if (all.size() > 0) {
+			return all.get(0);
+		}
+		return null;
 	}
 
 }

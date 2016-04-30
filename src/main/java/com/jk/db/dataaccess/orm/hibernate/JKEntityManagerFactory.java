@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
@@ -37,19 +38,18 @@ public class JKEntityManagerFactory {
 	 * 
 	 * @return
 	 */
-	public static EntityManagerFactory createEntityManagerFactory(String persisitnceUnitName, Properties prop, String entitiesPackages) {
-		List<String> entityClassNames = AnnotationDetector.scanAsList(Entity.class, entitiesPackages.split(","));
-
-		JKPersistenceUnitInfoImpl persistenceUnitInfo = new JKPersistenceUnitInfoImpl(persisitnceUnitName, entityClassNames, prop);
+	public static EntityManagerFactory createEntityManagerFactory(PersistenceUnitInfo info) {
+		
 
 		// Map<String, Object> integrationSettings = new HashMap<>();
 		// integrationSettings.put(AvailableSettings.INTERCEPTOR, new
 		// JKCustomSessionFactoryInterceptor());
 
-		PersistenceUnitInfoDescriptor puDescriptor = new PersistenceUnitInfoDescriptor(persistenceUnitInfo);
+		PersistenceUnitInfoDescriptor puDescriptor = new PersistenceUnitInfoDescriptor(info);
 		EntityManagerFactoryBuilderImpl entityManagerFactoryBuilder = new EntityManagerFactoryBuilderImpl(puDescriptor, null);
 
 		EntityManagerFactory emf = entityManagerFactoryBuilder.build();
 		return emf;
 	}
+
 }
