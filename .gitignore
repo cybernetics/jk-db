@@ -1,5 +1,11 @@
 /target/
+<<<<<<< HEAD
 .projet
 .classpath
 .project
 .settings
+=======
+.settings
+.classpath
+.project
+>>>>>>> branch 'master' of https://github.com/kiswanij/jk-db
